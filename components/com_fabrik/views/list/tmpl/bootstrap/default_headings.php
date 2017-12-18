@@ -19,7 +19,7 @@ $layoutData = (object) array(
 );
 $groupHeaders = in_array("table-group-header", explode(" ", $this->table->class));
 
-if ($groupHeaders && count($this->groupheadings) > 1) : ?>
+if ($groupHeaders && count($this->groupheadings) > 1 && max($this->groupheadings) > 1) : ?>
 	<tr class="fabrik___heading">
 		<?php 
 		$currentGrp = NULL;
