@@ -60,8 +60,8 @@ class PlgFabrik_ValidationruleIsgreaterorlessthan extends PlgFabrik_Validationru
 			$data = implode('', $data);
 		}
 
-		$c1 = $this->getOtherElement();
-		$c2 = $this->getOtherElement('2');
+		$c1 = $this->getOtherElement($repeatCounter);
+		$c2 = $this->getOtherElement($repeatCounter, '2');
 		$res = $this->elementModel->greaterOrLessThan($data, $c1['cond'], $c1['compare']);
 		if ($c2['cond'] !== '')
 		{
@@ -94,7 +94,7 @@ class PlgFabrik_ValidationruleIsgreaterorlessthan extends PlgFabrik_Validationru
 	 *
 	 * @return  object element model
 	 */
-	private function getOtherElement($suffix = '')
+	private function getOtherElement($repeatCounter, $suffix = '')
 	{
 		$params = $this->getParams();
 
@@ -120,7 +120,7 @@ class PlgFabrik_ValidationruleIsgreaterorlessthan extends PlgFabrik_Validationru
 				$this->formData = $this->elementModel->getForm()->formData;
 			}
 			$fieldElementModel = FabrikWorker::getPluginManager()->getElementPlugin($fieldId);
-			$compare = $fieldElementModel->getValue($formData, $repeatCounter);
+			$compare = $fieldElementModel->getValue($this->formData, $repeatCounter);
 			$name = $fieldElementModel->getElement()->label;
 		}
 
@@ -151,8 +151,8 @@ class PlgFabrik_ValidationruleIsgreaterorlessthan extends PlgFabrik_Validationru
 		$params      = $this->getParams();
 		$tipText     = $params->get('tip_text', '');
 
-		$c1 = $this->getOtherElement();
-		$c2 = $this->getOtherElement('2');
+		$c1 = $this->getOtherElement(0);
+		$c2 = $this->getOtherElement(0, '2');
 
 		if (!empty($tipText) || $c1['name'] === '')
 		{
