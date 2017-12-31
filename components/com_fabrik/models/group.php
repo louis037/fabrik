@@ -133,13 +133,32 @@ class FabrikFEModelGroup extends FabModel
 		}
 
 		$params        = $this->getParams();
-		$this->canEdit = true;
+		$this->canEdit = false;
 
 		// If group show is type 5, then always read only.
 		if (in_array($params->get('repeat_group_show_first', '1'), array('2', '5')))
 		{
-			$this->canEdit = false;
+			return $this->canEdit;
+		}
 
+		// Get the group access level
+		$groups      = $this->user->getAuthorisedViewLevels();
+		$params        = $this->getParams();
+		$groupAccess = $params->get('access', '');
+
+		if ($groupAccess !== '')
+		{
+			$this->canEdit = in_array($groupAccess, $groups);
+
+			// If the user can't access the group return that and ignore repeat_group_show_first option
+			if (!$this->canEdit)
+			{
+				return $this->canEdit;
+			}
+		}
+
+		if (!$this->canEdit)
+		{
 			return $this->canEdit;
 		}
 
@@ -289,7 +308,22 @@ class FabrikFEModelGroup extends FabModel
 			return $this->canView;
 		}
 
+		// Get the group access level
+		$groups      = $this->user->getAuthorisedViewLevels();
 		$params        = $this->getParams();
+		$groupAccess = $params->get('access', '');
+
+		if ($groupAccess !== '')
+		{
+			$this->canView = in_array($groupAccess, $groups);
+
+			// If the user can't access the group return that and ignore repeat_group_show_first option
+			if (!$this->canView)
+			{
+				return $this->canView;
+			}
+		}
+
 		$elementModels = $this->getPublishedElements();
 		$this->canView = false;
 
@@ -306,19 +340,9 @@ class FabrikFEModelGroup extends FabModel
 			break;
 		}
 
-		// Get the group access level
-		$groups      = $this->user->getAuthorisedViewLevels();
-		$groupAccess = $params->get('access', '');
-
-		if ($groupAccess !== '')
+		if (!$this->canView)
 		{
-			$this->canView = in_array($groupAccess, $groups);
-
-			// If the user can't access the group return that and ignore repeat_group_show_first option
-			if (!$this->canView)
-			{
-				return $this->canView;
-			}
+			return $this->canView;
 		}
 
 		/*
