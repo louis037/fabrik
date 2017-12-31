@@ -7785,10 +7785,12 @@ class FabrikFEModelList extends JModelForm
 			$tmp[] = $db->qn($k) . '=' . $val;
 		}
 
-		$db->setQuery(sprintf($fmtSql, implode(",", $tmp), $where));
-		$db->execute();
+		if (!empty($tmp) && !empty($where)) {
+			$db->setQuery(sprintf($fmtSql, implode(",", $tmp), $where));
+			$db->execute();
 
-		FabrikHelperHTML::debug((string) $db->getQuery(), 'list model updateObject:');
+			FabrikHelperHTML::debug((string) $db->getQuery(), 'list model updateObject:');
+		}
 
 		return true;
 	}
