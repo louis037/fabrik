@@ -34,6 +34,13 @@ class FabrikFEModelForm extends FabModelForm
 	public $id = null;
 
 	/**
+	 * Are multi-column groups forced to single column
+	 *
+	 * @var  bool
+	 */
+	public $groupSingleColumn = false;
+
+	/**
 	 * Set to -1 if form in ajax module, set to 1+ if in package
 	 *
 	 * @var int
@@ -4737,6 +4744,7 @@ class FabrikFEModelForm extends FabModelForm
 
 		foreach ($groups as $gkey => $groupModel)
 		{
+			$groupModel->groupSingleColumn = $this->groupSingleColumn;
 			$groupTable = $groupModel->getGroup();
 			$group = $groupModel->getGroupProperties($this);
 			$groupParams = $groupModel->getParams();
@@ -4899,7 +4907,7 @@ class FabrikFEModelForm extends FabModelForm
 
 			$group->classArray[] = 'fabrikGroup';
 
-			if ((int) $groupParams->get('group_columns', 1) == 1)
+			if ($groupModel->getGroupColumns($this->groupSingleColumn) == 1)
 			{
 				if (($this->isEditable() && $groupModel->labelPosition('form') !== 1)
 					|| (!$this->isEditable() && $groupModel->labelPosition('details') !== 1))
