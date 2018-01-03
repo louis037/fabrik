@@ -139,7 +139,7 @@
 		       type="listfields"
 		       valueformat="tableelement"
 		       nojoins="true"
-		       filter="internalid|field"
+		       filter="internalid|field|databasejoin"
 		       label="COM_FABRIK_FIELD_PRIMARY_KEY_LABEL"
 		       description="COM_FABRIK_FIELD_PRIMARY_KEY_DESC"
 		/>
