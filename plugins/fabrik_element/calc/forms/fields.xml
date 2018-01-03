@@ -145,7 +145,7 @@
 				label="PLG_ELEMENT_CALC_DECIMAL_SEP_LABEL"
 				size="3" />
 
-			<field name="text_format_string"
+			<field name="calc_format_string"
 				type="text"
 				description="PLG_ELEMENT_CALC_FORMAT_STRING_DESC"
 				label="PLG_ELEMENT_CALC_FORMAT_STRING_LABEL"/>

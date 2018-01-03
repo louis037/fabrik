@@ -278,7 +278,7 @@ class PlgFabrik_ElementCalc extends PlgFabrik_Element
 
 		if ($params->get('calc_on_save_only', 0))
 		{
-			$element_data = $this->getFormattedValue($element_data);
+			$element_data = $this->format($element_data);
 
 			return parent::preFormatFormJoins($element_data, $row);
 		}
@@ -309,7 +309,7 @@ class PlgFabrik_ElementCalc extends PlgFabrik_Element
 
 			FabrikWorker::logEval($res, 'Eval exception : ' . $element->name . '::preFormatFormJoins() : ' . $cal . ' : %s');
 
-			$res = $this->getFormattedValue($res);
+			$res = $this->format($res);
 
 			// $$$ hugh - need to set _raw, might be needed if (say) calc is being used as 'use_as_row_class'
 			// See comments in formatData() in table model, we might could move this to a renderRawListData() method.
@@ -332,17 +332,10 @@ class PlgFabrik_ElementCalc extends PlgFabrik_Element
 	public function renderListData($data, stdClass &$thisRow, $opts = array())
 	{
 		$data = FabrikWorker::JSONtoData($data, true);
-		$params = $this->getParams();
-		$qrCode = $params->get('render_as_qrcode', '0');
 
 		foreach ($data as &$d)
 		{
 			$d = $this->format($d);
-
-			if ($qrCode === '1' && !empty($d))
-			{
-				$d = $this->qrCodeLink($thisRow);
-			}
 		}
 
 		return parent::renderListData($data, $thisRow, $opts);
@@ -358,18 +351,25 @@ class PlgFabrik_ElementCalc extends PlgFabrik_Element
 	 */
 	protected function format(&$d, $doNumberFormat = true)
 	{
-		$params = $this->getParams();
-		$format = $params->get('text_format_string');
-		$formatBlank = $params->get('text_format_string_blank', true);
-
 		if ($doNumberFormat)
 		{
 			$d = $this->numberFormat($d);
 		}
 
+		$params = $this->getParams();
+		$format = $this->getFormatString();
+		$formatBlank = $params->get('text_format_string_blank', true);
+
 		if ($format != '' && ($formatBlank || $d != ''))
 		{
 			$d = sprintf($format, $d);
+		}
+
+		$qrCode = $params->get('render_as_qrcode', '0');
+
+		if ($qrCode === '1' && !empty($d))
+		{
+			$d = $this->qrCodeLink($d);
 		}
 
 		return $d;
@@ -407,7 +407,8 @@ class PlgFabrik_ElementCalc extends PlgFabrik_Element
 		$params = $this->getParams();
 		$element = $this->getElement();
 		$data = $this->getFormModel()->data;
-		$value = $this->getFormattedValue($this->getValue($data, $repeatCounter));
+		$value = $this->getValue($data, $repeatCounter);
+		$value = $this->format($value);
 
 		$name = $this->getHTMLName($repeatCounter);
 		$id = $this->getHTMLId($repeatCounter);
@@ -504,7 +505,7 @@ class PlgFabrik_ElementCalc extends PlgFabrik_Element
 		$calc = $w->parseMessageForPlaceHolder($calc, $d);
 		$c    = FabrikHelperHTML::isDebug() ? eval($calc) : @eval($calc);
 		$c    = preg_replace('#(\/\*.*?\*\/)#', '', $c);
-		$c    = $this->getFormattedValue($c);
+		$c    = $this->format($c);
 
 		echo $c;
 	}
@@ -716,7 +717,7 @@ class PlgFabrik_ElementCalc extends PlgFabrik_Element
 				$key = $listRef . $row->__pk_val;
 				$row->rowid = $row->__pk_val;
 
-				$return->$key = $this->getFormattedValue($this->_getV(ArrayHelper::fromObject($row), 0));
+				$return->$key = $this->format($this->_getV(ArrayHelper::fromObject($row), 0));
 			}
 		}
 
@@ -890,7 +891,7 @@ class PlgFabrik_ElementCalc extends PlgFabrik_Element
 			$value = $this->_getV($data, $repeatCounter);
 		}
 
-		$value = $this->getFormattedValue($value);
+		$value = $this->format($value);
 
 		return $value;
 	}
