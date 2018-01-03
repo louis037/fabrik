@@ -126,10 +126,9 @@ class PlgFabrik_ElementCalc extends PlgFabrik_Element
 				}
 				else
 				{
-					// erm ... ?? ... ^^
-					if (array_key_exists($name, $data) && array_key_exists($repeatCounter, $data[$name]))
+					if (array_key_exists($rawName, $data) && array_key_exists($repeatCounter, $data[$rawName]))
 					{
-						$default = $data[$name][$repeatCounter];
+						$default = $data[$rawName][$repeatCounter];
 					}
 				}
 			}
@@ -322,6 +321,61 @@ class PlgFabrik_ElementCalc extends PlgFabrik_Element
 	}
 
 	/**
+	 * Shows the data formatted for the list view
+	 *
+	 * @param   string    $data      Elements data
+	 * @param   stdClass  &$thisRow  All the data in the lists current row
+	 * @param   array     $opts      Rendering options
+	 *
+	 * @return  string	formatted value
+	 */
+	public function renderListData($data, stdClass &$thisRow, $opts = array())
+	{
+		$data = FabrikWorker::JSONtoData($data, true);
+		$params = $this->getParams();
+		$qrCode = $params->get('render_as_qrcode', '0');
+
+		foreach ($data as &$d)
+		{
+			$d = $this->format($d);
+
+			if ($qrCode === '1' && !empty($d))
+			{
+				$d = $this->qrCodeLink($thisRow);
+			}
+		}
+
+		return parent::renderListData($data, $thisRow, $opts);
+	}
+
+	/**
+	 * Format the string for use in list view, email data
+	 *
+	 * @param   mixed $d               data
+	 * @param   bool  $doNumberFormat  run numberFormat()
+	 *
+	 * @return string
+	 */
+	protected function format(&$d, $doNumberFormat = true)
+	{
+		$params = $this->getParams();
+		$format = $params->get('text_format_string');
+		$formatBlank = $params->get('text_format_string_blank', true);
+
+		if ($doNumberFormat)
+		{
+			$d = $this->numberFormat($d);
+		}
+
+		if ($format != '' && ($formatBlank || $d != ''))
+		{
+			$d = sprintf($format, $d);
+		}
+
+		return $d;
+	}
+
+	/**
 	 * Prepares the element data for CSV export
 	 *
 	 * @param   string  $data      Element data
@@ -331,6 +385,7 @@ class PlgFabrik_ElementCalc extends PlgFabrik_Element
 	 */
 	public function renderListData_csv($data, &$thisRow)
 	{
+		$data = $this->format($data);
 		$val = $this->renderListData($data, $thisRow);
 		$col = $this->getFullName(true, false);
 		$raw = $col . '_raw';
@@ -360,23 +415,9 @@ class PlgFabrik_ElementCalc extends PlgFabrik_Element
 
 		if ($this->canView())
 		{
-			if (!$this->isEditable())
-			{
-				$value = $this->replaceWithIcons($value);
-				$str[] = $value;
-			}
-			else
-			{
-				$layout = $this->getLayout('form');
-				$layoutData = new stdClass;
-				$layoutData->id = $id;
-				$layoutData->name = $name;
-				$layoutData->height = $element->height;
-				$layoutData->value = $value;
-				$layoutData->cols = $element->width;
-				$layoutData->rows = $element->height;
-				$str[] = $layout->render($layoutData);
-			}
+			// Calc is never editable
+			$value = $this->replaceWithIcons($value);
+			$str[] = $value;
 		}
 		else
 		{
@@ -621,6 +662,27 @@ class PlgFabrik_ElementCalc extends PlgFabrik_Element
 	}
 
 	/**
+	 * Get the element's cell class
+	 *
+	 * @since 3.0.4
+	 *
+	 * @return  string	css classes
+	 */
+	public function getCellClass()
+	{
+		$params = $this->getParams();
+		$classes = parent::getCellClass();
+
+		if ($params->get('text_format') == 'number')
+		{
+			$decimalLength = $params->get('decimal_length', 0);
+			$classes .= ' ' . (($decimalLength == 0) ? 'integer' : 'decimal');
+		}
+
+		return $classes;
+	}
+
+	/**
 	 * Update list data
 	 *
 	 * @return  void
@@ -662,6 +724,146 @@ class PlgFabrik_ElementCalc extends PlgFabrik_Element
 	}
 
 	/**
+	 * Output a QR Code image
+	 *
+	 * @since 3.1
+	 */
+	public function onAjax_renderQRCode()
+	{
+		$input = $this->app->input;
+		$this->setId($input->getInt('element_id'));
+		$this->loadMeForAjax();
+		$this->getElement();
+		$url = 'index.php';
+		$this->lang->load('com_fabrik.plg.element.field', JPATH_ADMINISTRATOR);
+
+		if (!$this->canView())
+		{
+			$this->app->enqueueMessage(FText::_('PLG_ELEMENT_FIELD_NO_PERMISSION'));
+			$this->app->redirect($url);
+			exit;
+		}
+
+		$rowId = $input->get('rowid', '', 'string');
+
+		if (empty($rowId))
+		{
+			$this->app->redirect($url);
+			exit;
+		}
+
+		$listModel = $this->getListModel();
+		$row = $listModel->getRow($rowId, false);
+
+		if (empty($row))
+		{
+			$this->app->redirect($url);
+			exit;
+		}
+
+		$elName = $this->getFullName(true, false);
+		$value = $row->$elName;
+
+		if (!empty($value))
+		{
+			require JPATH_SITE . '/components/com_fabrik/libs/phpqrcode/phpqrcode.php';
+
+			ob_start();
+			QRCode::png($value);
+			$img = ob_get_contents();
+			ob_end_clean();
+		}
+
+		if (empty($img))
+		{
+			$img = file_get_contents(JPATH_SITE . '/media/system/images/notice-note.png');
+		}
+
+		// Some time in the past
+		header("Expires: Sat, 26 Jul 1997 05:00:00 GMT");
+		header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
+		header("Cache-Control: no-store, no-cache, must-revalidate");
+		header("Cache-Control: post-check=0, pre-check=0", false);
+		header("Pragma: no-cache");
+		header('Accept-Ranges: bytes');
+		header('Content-Length: ' . strlen($img));
+		//header('Content-Type: ' . 'image/gif');
+
+		// Serve up the file
+		echo $img;
+
+		// And we're done.
+		exit();
+	}
+
+	/**
+	 * Get a link to this element which will call onAjax_renderQRCode().
+	 *
+	 * @param   array|object  $thisRow  Row data
+	 *
+	 * @since 3.1
+	 *
+	 * @return   string  QR code link
+	 */
+	protected function qrCodeLink($thisRow)
+	{
+		if (is_object($thisRow))
+		{
+			$thisRow = ArrayHelper::fromObject($thisRow);
+		}
+
+		$formModel = $this->getFormModel();
+		$formId = $formModel->getId();
+		$rowId = $formModel->getRowId();
+
+		if (empty($rowId))
+		{
+			/**
+			 * Meh.  See commentary at the start of $formModel->getEmailData() about rowid.  For now, if this is a new row,
+			 * the only place we're going to find it is in the list model's lastInsertId.  Bah humbug.
+			 * But check __pk_val first anyway, what the heck.
+			 */
+
+			$rowId = FArrayHelper::getValue($thisRow, '__pk_val', '');
+
+			if (empty($rowId))
+			{
+				/**
+				 * Nope.  Try lastInsertId. Or maybe on top of the fridge?  Or in the microwave?  Down the back
+				 * of the couch cushions?
+				 */
+
+				$rowId = $formModel->getListModel()->lastInsertId;
+
+				/**
+				 * OK, give up.  If *still* no rowid, we're probably being called from something like getEmailData() on onBeforeProcess or
+				 * onBeforeStore, and it's a new form, so no rowid yet.  So no point returning anything yet.
+				 */
+
+				if (empty($rowId))
+				{
+					return '';
+				}
+			}
+		}
+
+		/*
+		 * YAY!!!  w00t!!  We have a rowid.  Whoop de freakin' doo!!
+		 */
+
+		$elementId = $this->getId();
+		$src = COM_FABRIK_LIVESITE
+		. 'index.php?option=com_' . $this->package . '&amp;task=plugin.pluginAjax&amp;plugin=field&amp;method=ajax_renderQRCode&amp;'
+				. 'format=raw&amp;element_id=' . $elementId . '&amp;formid=' . $formId . '&amp;rowid=' . $rowId . '&amp;repeatcount=0';
+
+		$layout = $this->getLayout('qr');
+		$displayData = new stdClass;
+		$displayData->src = $src;
+
+		return $layout->render($displayData);
+	}
+
+	/**
 	 * Turn form value into email formatted value
 	 * $$$ hugh - I added this as for reasons I don't understand, something to do with
 	 * how the value gets calc'ed during preProcess, sometimes the calc is "right" when
@@ -677,6 +879,11 @@ class PlgFabrik_ElementCalc extends PlgFabrik_Element
 	protected function getIndEmailValue($value, $data = array(), $repeatCounter = 0)
 	{
 		$params = $this->getParams();
+
+		if ($params->get('render_as_qrcode', '0') === '1')
+		{
+			return html_entity_decode($this->qrCodeLink($data));
+		}
 
 		if (!$params->get('calc_on_save_only', true))
 		{
@@ -701,31 +908,72 @@ class PlgFabrik_ElementCalc extends PlgFabrik_Element
 			return 'BLOB';
 		}
 
-		return 'TEXT';
+		$params = $this->getParams();
+		switch ($params->get('text_format'))
+		{
+			case 'text':
+			default:
+				$objType = "TEXT";
+				break;
+			case 'varchar':
+				$objType = "VARCHAR(" . $params->get('maxlength', 255) . ")";
+				break;
+			case 'number':
+				$integerLength = (int) $params->get('integer_length', 0);
+				$decimalLength = (int) $params->get('decimal_length', 0);
+				if ($decimalLength == 0) {
+					switch ($integerLength)
+					{
+						case 1:
+						case 2:
+						case 3:
+							$integerType = "TINYINT";
+							break;
+						case 4:
+						case 5:
+							$integerType = "SMALLINT";
+							break;
+						case 6:
+						case 7:
+							$integerType = "MEDIUMINT";
+							break;
+						default:
+							$integerType = "INT";
+						// We do not support BIGINT because PHP only supports this on 64-bit platforms and only on Windows with PHP 7.
+					}
+					$objType = $integerType . "(" . $integerLength . ")";
+				}
+				else
+				{
+					$objType = "DECIMAL(" . ($integerLength + $decimalLength) . "," . $decimalLength . ")";
+				}
+				break;
+		}
+		return $objType;
 	}
 
-    /**
-     * Is the element consider to be empty for purposes of rendering on the form,
-     * i.e. for assigning classes, etc.  Can be overridden by individual elements.
-     *
-     * @param   array $data          Data to test against
-     * @param   int   $repeatCounter Repeat group #
-     *
-     * @return  bool
-     */
-    public function dataConsideredEmpty($data, $repeatCounter)
-    {
-        $parts = explode("\n", $data);
+	/**
+	 * Is the element considered to be empty for purposes of rendering on the form,
+	 * i.e. for assigning classes, etc.  Can be overridden by individual elements.
+	 *
+	 * @param   array $data          Data to test against
+	 * @param   int   $repeatCounter Repeat group #
+	 *
+	 * @return  bool
+	 */
+	public function dataConsideredEmpty($data, $repeatCounter)
+	{
+			$parts = explode("\n", $data);
 
-        // see if all it contains is the "\n" and loader gif added in render ...
-        if (count($parts) === 2)
-        {
-            if (empty($parts[0]) && strstr($parts[1], 'loader'))
-            {
-                return true;
-            }
-        }
+			// see if all it contains is the "\n" and loader gif added in render ...
+			if (count($parts) === 2)
+			{
+					if (empty($parts[0]) && strstr($parts[1], 'loader'))
+					{
+							return true;
+					}
+			}
 
-        return false;
-    }
+			return false;
+	}
 }
