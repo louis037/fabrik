@@ -132,6 +132,9 @@ window.addEvent(\'domready\', function () {
 		}
 		field.fireEvent("blur", field);
 	});
+	FbEditor.setOptions({
+			autoScrollEditorIntoView: true
+	});
 	var maxlines = Math.floor((' . $maxHeight . ' - 2) / FbEditor.renderer.lineHeight);
 	var updateHeight = function () {
 		var s = FbEditor.getSession();
