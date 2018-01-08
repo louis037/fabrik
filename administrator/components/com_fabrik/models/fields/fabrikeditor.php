@@ -113,6 +113,7 @@ window.addEvent(\'domready\', function () {
 	var FbEditor = ace.edit("' . $aceId . '-ace");
 	FbEditor.setTheme("ace/theme/' . $theme . '");
 	FbEditor.getSession().setMode(' . $aceMode . ');
+	FbEditor.$blockScrolling = Infinity;
 	FbEditor.setValue(field.value);
 	FbEditor.navigateFileStart();
 	FbEditor.setAnimatedScroll(true);
@@ -132,7 +133,7 @@ window.addEvent(\'domready\', function () {
 		field.fireEvent("blur", field);
 	});
 	FbEditor.setOptions({
-			autoScrollEditorIntoView: true
+			autoScrollEditorIntoView: true,
 	});
 	var updateHeight = function () {
 		var s = FbEditor.getSession();
@@ -148,7 +149,9 @@ window.addEvent(\'domready\', function () {
 			FbEditor.resize();
 		}
 	}
-	updateHeight();
+	FbEditor.renderer.on("afterRender", function() {
+		updateHeight();
+	});
 	FbEditor.getSession().on("change", updateHeight);
 });
 		';
