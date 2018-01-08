@@ -96,7 +96,6 @@ class JFormFieldFabrikeditor extends JFormFieldTextArea
 		}
 
 		$minHeight = str_ireplace('px', '', $height);
-		$maxHeight = str_ireplace('px', '', $maxHeight);
 
 		/**
 		 * In code below...
@@ -135,13 +134,11 @@ window.addEvent(\'domready\', function () {
 	FbEditor.setOptions({
 			autoScrollEditorIntoView: true
 	});
-	var maxlines = Math.floor((' . $maxHeight . ' - 2) / FbEditor.renderer.lineHeight);
 	var updateHeight = function () {
 		var s = FbEditor.getSession();
 		var r = FbEditor.renderer;
 		var l = s.getScreenLength();
-		var h = (l > maxlines ? maxlines : l)
-		      * r.lineHeight
+		var h = l * r.lineHeight
 		      + (r.$horizScroll ? r.scrollBar.getWidth() : 0)
 		      + 2;
 		h = h < ' . $minHeight . ' ? ' . $minHeight . ' : h;
