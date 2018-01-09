@@ -621,25 +621,6 @@ class PlgFabrik_ElementCalc extends PlgFabrik_Element
 	}
 
 	/**
-	 * Get the formatted value
-	 *
-	 * @param  $value
-	 *
-	 * @since 3.5
-	 */
-	public function getFormattedValue($value)
-	{
-		$format = $this->getFormatString();
-
-		if (!empty($format))
-		{
-			$value = sprintf($format, $value);
-		}
-
-		return $value;
-	}
-
-	/**
 	 * Get JS code for ini element list js
 	 * Overwritten in plugin classes
 	 *
@@ -673,11 +654,14 @@ class PlgFabrik_ElementCalc extends PlgFabrik_Element
 	{
 		$params = $this->getParams();
 		$classes = parent::getCellClass();
+		$format = $params->get('text_format');
 
-		if ($params->get('text_format') == 'number')
+		switch ($format)
 		{
-			$decimalLength = $params->get('decimal_length', 0);
-			$classes .= ' ' . (($decimalLength == 0) ? 'integer' : 'decimal');
+			case 'integer':
+			case 'decimal':
+				$classes .= ' ' . $format;
+			default:
 		}
 
 		return $classes;
@@ -919,35 +903,33 @@ class PlgFabrik_ElementCalc extends PlgFabrik_Element
 			case 'varchar':
 				$objType = "VARCHAR(" . $params->get('maxlength', 255) . ")";
 				break;
-			case 'number':
+			case 'integer':
+				$integerLength = (int) $params->get('integer_length', 0);
+				switch ($integerLength)
+				{
+					case 1:
+					case 2:
+					case 3:
+						$integerType = "TINYINT";
+						break;
+					case 4:
+					case 5:
+						$integerType = "SMALLINT";
+						break;
+					case 6:
+					case 7:
+						$integerType = "MEDIUMINT";
+						break;
+					default:
+						$integerType = "INT";
+					// We do not support BIGINT because PHP only supports this on 64-bit platforms and only on Windows with PHP 7.
+				}
+				$objType = $integerType . "(" . $integerLength . ")";
+				break;
+			case 'decimal':
 				$integerLength = (int) $params->get('integer_length', 0);
 				$decimalLength = (int) $params->get('decimal_length', 0);
-				if ($decimalLength == 0) {
-					switch ($integerLength)
-					{
-						case 1:
-						case 2:
-						case 3:
-							$integerType = "TINYINT";
-							break;
-						case 4:
-						case 5:
-							$integerType = "SMALLINT";
-							break;
-						case 6:
-						case 7:
-							$integerType = "MEDIUMINT";
-							break;
-						default:
-							$integerType = "INT";
-						// We do not support BIGINT because PHP only supports this on 64-bit platforms and only on Windows with PHP 7.
-					}
-					$objType = $integerType . "(" . $integerLength . ")";
-				}
-				else
-				{
-					$objType = "DECIMAL(" . ($integerLength + $decimalLength) . "," . $decimalLength . ")";
-				}
+				$objType = "DECIMAL(" . ($integerLength + $decimalLength) . "," . $decimalLength . ")";
 				break;
 		}
 		return $objType;

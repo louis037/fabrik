@@ -94,7 +94,8 @@
 				label="PLG_ELEMENT_CALC_FORMAT_LABEL">
 					<option value="text">PLG_ELEMENT_CALC_FORMAT_TEXT</option>
 					<option value="varchar">PLG_ELEMENT_CALC_FORMAT_VARCHAR</option>
-					<option value="number">PLG_ELEMENT_CALC_FORMAT_NUMBER</option>
+					<option value="integer">PLG_ELEMENT_CALC_FORMAT_INTEGER</option>
+					<option value="decimal">PLG_ELEMENT_CALC_FORMAT_DECIMAL</option>
 			</field>
 
 			<field name="maxlength"
