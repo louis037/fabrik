@@ -917,25 +917,7 @@ class FabrikFEModelList extends JModelForm
 		$config = JComponentHelper::getParams('com_fabrik');
 		$opts['custom_layout'] = $config->get('fabrik_check_custom_list_layout', '0');
 
-		try
-		{
-			$this->finesseData($opts);
-		}
-		catch (Exception $e)
-		{
-			$item = $this->getTable();
-			$msg = 'Fabrik has generated an incorrect query for the list ' . $item->label . ': <br />';
-			if (FabrikHelperHTML::isDebug(true))
-			{
-				$msg .= '<br /><pre>' . $e->getMessage() . '</pre>';
-			}
-
-			if ($this->config->get('debug'))
-            {
-
-            }
-			throw new RuntimeException($msg, 500);
-		}
+		$this->finesseData($opts);
 
 		$nav = $this->getPagination($this->totalRecords, $this->limitStart, $this->limitLength);
 
@@ -982,7 +964,24 @@ class FabrikFEModelList extends JModelForm
 		 * fabrik3 - 2nd param in j16 is now used - guessing that joomfish now uses the third param for the false switch?
 		* $$$ rob 26/09/2011 note Joomfish not currently released for J1.7
 		*/
+		try
+		{
 		$this->data = $fabrikDb->loadObjectList('', 'stdClass', false);
+		}
+		catch (Exception $e)
+		{
+			$item = $this->getTable();
+			$msg = 'Fabrik has generated an incorrect query for the list "' . $item->label . '"';
+			if (FabrikHelperHTML::isDebug(true))
+			{
+				if (!is_string($query)
+				{
+					$query = $query->__toString();
+				}
+				$msg .= ': ' . $e->getMessage() . ': ' . $query;
+			}
+			throw new RuntimeException($msg, 500);
+		}
 
 		// fire a plugin hook before we format the data
 		$args       = new stdClass;
