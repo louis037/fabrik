@@ -68,9 +68,8 @@ class JFormFieldFabrikeditor extends JFormFieldTextArea
 
 		$mode      = $this->getAttribute('mode', 'html');
 		$theme     = $this->getAttribute('theme', 'github');
-		$height    = $this->getAttribute('height', '300px');
-		$width     =$this->getAttribute('width', '100%');
-		$maxHeight = $this->getAttribute('max-height', str_ireplace('px', '', $height) * 2 . 'px');
+		$height    = $this->getAttribute('height', '138px');
+		$width     = $this->getAttribute('width', '100%');
 
 		$editor = '<textarea name="' . $this->name . '" id="' . $this->id . '"'
 			. $columns . $rows . $class . $disabled . $onChange . $required . '>'
@@ -158,6 +157,7 @@ window.addEvent(\'domready\', function () {
 
 		$src = array(
 			'Ace' => 'media/com_fabrik/js/lib/ace/src-min-noconflict/ace.js',
+			'Ace' => 'media/com_fabrik/js/lib/ace/src-noconflict/ace.js',
 			'Fabrik' => 'media/com_fabrik/js/fabrik.js');
 		FabrikHelperHTML::script($src, $script);
 
