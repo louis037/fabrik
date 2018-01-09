@@ -974,7 +974,7 @@ class FabrikFEModelList extends JModelForm
 			$msg = 'Fabrik has generated an incorrect query for the list "' . $item->label . '"';
 			if (FabrikHelperHTML::isDebug(true))
 			{
-				if (!is_string($query)
+				if (!is_string($query))
 				{
 					$query = $query->__toString();
 				}
