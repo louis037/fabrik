@@ -68,7 +68,7 @@ class JFormFieldFabrikeditor extends JFormFieldTextArea
 
 		$mode      = $this->getAttribute('mode', 'html');
 		$theme     = $this->getAttribute('theme', 'github');
-		$height    = $this->getAttribute('height', '138px');
+		$height    = $this->getAttribute('height', '142px');
 		$width     = $this->getAttribute('width', '100%');
 
 		$editor = '<textarea name="' . $this->name . '" id="' . $this->id . '"'
@@ -131,9 +131,8 @@ window.addEvent(\'domready\', function () {
 		}
 		field.fireEvent("blur", field);
 	});
-	FbEditor.setOptions({
-			autoScrollEditorIntoView: true,
-	});
+	FbEditor.setAutoScrollEditorIntoView(true);
+	FbEditor.setOption("minLine", 10);
 	var updateHeight = function () {
 		var s = FbEditor.getSession();
 		var r = FbEditor.renderer;
