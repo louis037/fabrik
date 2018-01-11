@@ -966,7 +966,7 @@ class FabrikFEModelList extends JModelForm
 		*/
 		try
 		{
-		$this->data = $fabrikDb->loadObjectList('', 'stdClass', false);
+			$this->data = $fabrikDb->loadObjectList('', 'stdClass', false);
 		}
 		catch (Exception $e)
 		{
