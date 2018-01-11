@@ -291,10 +291,10 @@ var ListFieldsElement = new Class({
 	insertTextAtCaret: function (el, text) {
 		var pos = this.getInputSelection(el).end;
 		var val = el.value;
-		if (pos != 0 && val.substring(pos-1,1) != ' ') {
+		if (pos !== 0 && val.substring(pos-1, 1) !== ' ') {
 			text = ' ' + text;
 		}
-		if (pos != val.length && val.substring(pos,1) != ' ') {
+		if (pos !== val.length && val.substring(pos, 1) !== ' ') {
 			text += ' ';
 		}
 		var newPos = pos + text.length;
