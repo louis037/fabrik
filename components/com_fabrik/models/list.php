@@ -945,7 +945,7 @@ class FabrikFEModelList extends JModelForm
 		$fabrikDb = $this->getDb();
 		$this->setBigSelects();
 		$query = $this->buildQuery();
-//echo $query;
+
 		// $$$ rob - if merging joined data then we don't want to limit
 		// the query as we have already done so in buildQuery()
 		if ($this->mergeJoinedData() || $this->limitLength === -1)
