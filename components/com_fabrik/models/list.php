@@ -968,10 +968,10 @@ class FabrikFEModelList extends JModelForm
 		{
 			$this->data = $fabrikDb->loadObjectList('', 'stdClass', false);
 		}
-		catch (Exception $e)
+		catch (RuntimeException $e)
 		{
 			$item = $this->getTable();
-			$msg = 'Fabrik has generated an incorrect query for the list "' . $item->label . '"';
+			$msg = 'FABRIK ERROR: Incorrect query for the list "' . $item->label . '"';
 			if (FabrikHelperHTML::isDebug(true))
 			{
 				if (!is_string($query))
@@ -980,7 +980,7 @@ class FabrikFEModelList extends JModelForm
 				}
 				$msg .= ': ' . $e->getMessage() . ': ' . $query;
 			}
-			throw new RuntimeException($msg, 500);
+			throw new RuntimeException($msg, $e->getCode());
 		}
 
 		// fire a plugin hook before we format the data
