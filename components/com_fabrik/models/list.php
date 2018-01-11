@@ -7838,7 +7838,12 @@ class FabrikFEModelList extends JModelForm
 
 			$values[] = $val;
 		}
-
+		
+		if (empty($fields) || empty($values))
+		{
+			return true;
+		}
+		
 		$db->setQuery(sprintf($fmtSql, implode(",", $fields), implode(",", $values)));
 		$db->execute();
 
