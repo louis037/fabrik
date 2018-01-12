@@ -130,10 +130,13 @@ class PlgFabrik_ValidationruleAreUniqueValues extends PlgFabrik_Validationrule
 		$db->setQuery($query);
 		$c = $db->loadResult();
 
-		if ($c == 0 || $params->get('areuniquevalues-message') != '') return ($c == 0) ? true : false;
+		if ($c != 0 && $params->get('areuniquevalues-message') == '')
+		{
+			$this->errorMsg = $this->getLabel();
+			return false;
+		}
 
-		$this->errorMsg = $this->getLabel();
-		return false;
+		return ($c == 0) ? true : false;
 	}
 
 	/**
