@@ -1762,7 +1762,7 @@ class Worker
 	 */
 	public static function getDbo($loadJoomlaDb = false, $cnnId = null)
 	{
-		$sig = (int) $loadJoomlaDb . '.' . $cnnId;
+		$sig = $loadJoomlaDb ? -1 : (int) $cnnId;
 
 		if (!self::$database)
 		{
@@ -1802,6 +1802,8 @@ class Worker
 
 			$version              = new JVersion;
 			self::$database[$sig] = $version->RELEASE > 2.5 ? JDatabaseDriver::getInstance($options) : JDatabase::getInstance($options);
+
+			self::$database[$sig]->setDebug(JDEBUG);
 
 			Worker::bigSelects(self::$database[$sig]);
 
