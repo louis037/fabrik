@@ -61,16 +61,13 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
             this.duplicatedGroups = $H({});
             this.addingOrDeletingGroup = false;
             this.addedGroups = [];
-	        this.watchRepeatNumsDone = false;
+            this.watchRepeatNumsDone = false;
             this.fx = {};
             this.fx.elements = [];
             this.fx.hidden = [];
             this.fx.validations = {};
             this.setUpAll();
             this._setMozBoxWidths();
-            (function () {
-                this.duplicateGroupsToMin();
-            }.bind(this)).delay(1000);
 
             // Delegated element events
             this.events = {};
@@ -107,13 +104,13 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
         setUpAll: function () {
             this.setUp();
 
-	        // add a wrapper if we're going to be using the tooltip, as can't do tooltip on disabled elements
-	        if (this.options.ajaxValidation && this.options.toggleSubmit && this.options.toggleSubmitTip !== '') {
-		        var submit = this._getButton('Submit');
-		        if (typeOf(submit) !== 'null') {
-			        jQuery(submit).wrap('<div data-toggle="tooltip" title="you must validate" class="fabrikSubmitWrapper" style="display: inline-block"></div>div>');
-		        }
-	        }
+            // add a wrapper if we're going to be using the tooltip, as can't do tooltip on disabled elements
+            if (this.options.ajaxValidation && this.options.toggleSubmit && this.options.toggleSubmitTip !== '') {
+                var submit = this._getButton('Submit');
+                if (typeOf(submit) !== 'null') {
+                    jQuery(submit).wrap('<div data-toggle="tooltip" title="you must validate" class="fabrikSubmitWrapper" style="display: inline-block"></div>div>');
+                }
+            }
 
             this.winScroller = new Fx.Scroll(window);
             if (this.form) {
@@ -150,7 +147,6 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
                 this.watchGoBackButton();
             }
 
-
             this.watchPrintButton();
             this.watchPdfButton();
             this.watchTabs();
@@ -158,24 +154,28 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
         },
 
         watchRepeatNums: function () {
-	        Fabrik.addEvent('fabrik.form.elements.added', function (form) {
-	            if (form.id === this.id && !this.watchRepeatNumsDone) {
-		            Object.each(this.options.numRepeatEls, function (name, key) {
-			            if (name !== '') {
-				            var el = this.formElements.get(name);
-				            if (el) {
+            Fabrik.addEvent('fabrik.form.elements.added', function (form) {
+                if (form.id === this.id && !this.watchRepeatNumsDone) {
+                    Object.each(this.options.numRepeatEls, function (name, key) {
+                        if (name !== '') {
+                            var el = this.formElements.get(name);
+                            if (el) {
                                 el.addNewEventAux(el.getChangeEvent(), function(event) {
                                     var v = el.getValue();
                                     this.options.minRepeat[key] = v.toInt();
-	                                this.options.maxRepeat[key] = v.toInt();
-	                                this.duplicateGroupsToMin();
+                                    this.options.maxRepeat[key] = v.toInt();
+                                    this.duplicateGroupsToMin();
                                 }.bind(this, el, key));
-				            }
-			            }
-		            }.bind(form));
-		            this.watchRepeatNumsDone = true;
-	            }
-	        }.bind(this));
+                                var v = el.getValue();
+                                this.options.minRepeat[key] = v.toInt();
+                                this.options.maxRepeat[key] = v.toInt();
+                            }
+                        }
+                    }.bind(form));
+                    this.watchRepeatNumsDone = true;
+                    this.duplicateGroupsToMin();
+                }
+            }.bind(this));
         },
 
         /**
@@ -192,10 +192,10 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
                     url = url.replace(/&rowid=\d+/, '&rowid=' + this.options.rowid);
                     if (this.options.lang !== false) {
                         if (url.test(/\?/)) {
-	                        url += '&lang=' + this.options.lang;
+                            url += '&lang=' + this.options.lang;
                         }
                         else {
-	                        url += '?lang=' + this.options.lang;
+                            url += '?lang=' + this.options.lang;
                         }
                     }
                     window.open(
@@ -217,12 +217,12 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
                 // @FIXME for SEF
                 var url = e.event.currentTarget.href.replace(/(rowid=\d*)/, 'rowid=' + this.options.rowid);
                 if (this.options.lang !== false) {
-	                if (url.test(/\?/)) {
-		                url += '&lang=' + this.options.lang;
-	                }
-	                else {
-		                url += '?lang=' + this.options.lang;
-	                }                }
+                    if (url.test(/\?/)) {
+                        url += '&lang=' + this.options.lang;
+                    }
+                    else {
+                        url += '?lang=' + this.options.lang;
+                    }                }
                 window.location = url;
             }.bind(this));
         },
@@ -459,10 +459,10 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
                         fx.css.element.show();
                         fx.css.start({'opacity': [0, 1]});
                     }
-	                if (groupfx) {
-		                this.showGroupTab(id);
+                    if (groupfx) {
+                        this.showGroupTab(id);
                         fxElement.show();
-	                }
+                    }
                     break;
                 case 'fadeout':
                     if (fx.css.lastMethod !== 'fadeout') {
@@ -471,9 +471,9 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
                             fxElement.addClass('fabrikHide');
                         });
                     }
-	                if (groupfx) {
-		                this.hideGroupTab(id);
-	                }
+                    if (groupfx) {
+                        this.hideGroupTab(id);
+                    }
                     break;
                 case 'slide in':
                     fx.slide.slideIn();
@@ -611,9 +611,9 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
          * button which resets the form and submits it using the removeSession task.
          */
         watchClearSession: function () {
-	        if (this.options.multipage_save === 0) {
-		        return;
-	        }
+            if (this.options.multipage_save === 0) {
+                return;
+            }
 
             var self = this,
                 form = jQuery(this.form);
@@ -1802,11 +1802,11 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
          * @returns {boolean}
          */
         mockDuplicateGroup: function(groupId) {
-            var add_btn = this.form.getElement('#group' + groupId + ' .addGroup');
+            var addButton = this.form.getElement('#group' + groupId + ' .addGroup');
 
-            if (typeOf(add_btn) !== 'null') {
-                var add_e = new Event.Mock(add_btn, 'click');
-                this.duplicateGroup(add_e, false);
+            if (typeOf(addButton) !== 'null') {
+                var addEvent = new Event.Mock(addButton, 'click');
+                this.duplicateGroup(addEvent, false);
                 return true;
             }
 
@@ -1835,7 +1835,7 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
                 }
 
                 var repeat_counter = this.form.getElement('#fabrik_repeat_group_' + groupId + '_counter'),
-                    repeat_rows, repeat_real, add_btn, deleteButton, i, repeat_id_0, deleteEvent;
+                    repeat_rows, repeat_real, addButton, deleteButton, i, repeat_id_0, deleteEvent;
 
                 if (typeOf(repeat_counter) === 'null') {
                     return;
@@ -1864,39 +1864,34 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
                  * $$$ paul - fixing min of 0 for Jaanus
                  * http://fabrikar.com/forums/index.php?threads/couple-issues-with-protostar-template.35917/
                  **/
-                if (min === 0 && repeat_real === 0) {
-
+                if (repeat_rows < min) {
                     // Create mock event
-                    deleteButton = this.form.getElement('#group' + groupId + ' .deleteGroup');
-                    deleteEvent = typeOf(deleteButton) !== 'null' ? new Event.Mock(deleteButton, 'click') : false;
-                    subGroup = group.getElement('.fabrikSubGroup');
-                    // Remove only group
-                    this.deleteGroup(deleteEvent, group, subGroup);
-
-                }
-                else if (repeat_rows < min) {
-                    // Create mock event
-                    add_btn = this.form.getElement('#group' + groupId + ' .addGroup');
-                    if (typeOf(add_btn) !== 'null') {
-                        var add_e = new Event.Mock(add_btn, 'click');
+                    var addButton = this.form.getElement('#group' + groupId + ' .addGroup');
+                    if (typeOf(addButton) !== 'null') {
+                        var addEvent = new Event.Mock(addButton, 'click');
 
                         // Duplicate group
                         for (i = repeat_rows; i < min; i++) {
-                            this.duplicateGroup(add_e, false);
+                            this.duplicateGroup(addEvent, false);
                         }
                     }
                 }
-                else if (max > 0 && repeat_rows > max) {
-	                // Delete groups
-	                for (i = repeat_rows; i > max; i--) {
-		                var b = jQuery(this.form.getElements('#group' + groupId + ' .deleteGroup')).last()[0];
-		                var del_btn = jQuery(b).find('[data-role=fabrik_delete_group]')[0];
-		                subGroup = jQuery(group.getElements('.fabrikSubGroup')).last()[0];
-		                if (typeOf(del_btn) !== 'null') {
-		                    var del_e = new Event.Mock(del_btn, 'click');
-			                this.deleteGroup(del_e, group, subGroup);
-		                }
-	                }
+                else if (max > -1 && repeat_rows > max) {
+                    // Delete groups
+                    for (i = repeat_rows; i > max; i--) {
+                        var subGroup = jQuery(group.getElements('.fabrikSubGroup')).last()[0];
+                        var b = jQuery(this.form.getElements('#group' + groupId + ' .deleteGroup')).last()[0];
+                        var deleteButton = jQuery(b).find('[data-role=fabrik_delete_group]')[0];
+                        var deleteEvent = typeOf(deleteButton) !== 'null' ? new Event.Mock(deleteButton, 'click') : false;
+                        this.deleteGroup(deleteEvent, group, subGroup);
+                    }
+                }
+                else if (min === 0 && repeat_real === 0) {
+                    // Create mock event
+                    var subGroup = group.getElement('.fabrikSubGroup');
+                    var deleteButton = this.form.getElement('#group' + groupId + ' .deleteGroup');
+                    var deleteEvent = typeOf(deleteButton) !== 'null' ? new Event.Mock(deleteButton, 'click') : false;
+                    this.deleteGroup(deleteEvent, group, subGroup);
                 }
 
                 this.setRepeatGroupIntro(group, groupId);
@@ -2097,7 +2092,7 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
             var group = document.id('group' + i);
             var c = this.repeatGroupMarkers.get(i);
             var repeats = document.id('fabrik_repeat_group_' + i + '_counter').get('value').toInt();
-            if (repeats >= this.options.maxRepeat[i] && this.options.maxRepeat[i] !== 0) {
+            if (repeats >= this.options.maxRepeat[i] && this.options.maxRepeat[i] !== -1) {
                 if (this.options.minMaxErrMsg[i] !== '') {
                     var errorMessage = this.options.minMaxErrMsg[i];
                     errorMessage = errorMessage.replace(/\{min\}/, this.options.minRepeat[i]);
@@ -2267,7 +2262,7 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
             o[i] = newElementControllers;
             this.addElements(o);
 
-	        /**
+            /**
              * Only scroll the window if the new element is not visible and 'scroll' arg true
              * (so for example, we won't scroll if called from duplicateGroupsToMin)
              */
@@ -2277,7 +2272,7 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
                     win_scroll = document.id(window).getScroll().y,
                     obj = clone.getCoordinates();
 
-	            /**
+                /**
                  * If the bottom of the new repeat goes below the bottom of the visible window,
                  * scroll up just enough to show it.
                  */
@@ -2434,8 +2429,8 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
             this.form.getElements('.fabrikError').addClass('fabrikHide');
         },
 
-	    /**
-	     * Reset errors
+        /**
+         * Reset errors
          */
         clearErrors: function () {
             jQuery(this.form).find('.fabrikError').removeClass('fabrikError')
@@ -2512,7 +2507,7 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
 
         addMustValidate: function (el) {
             if (this.options.ajaxValidation && this.options.toggleSubmit) {
-	            this.mustValidateEls.set(el.element.id, el.options.mustValidate);
+                this.mustValidateEls.set(el.element.id, el.options.mustValidate);
                 if (el.options.mustValidate) {
                     this.options.mustValidate = true;
                     this.toggleSubmit(false);
@@ -2526,22 +2521,22 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
                 if (on === true) {
                     submit.disabled = '';
                     submit.setStyle('opacity', 1);
-	                if (this.options.toggleSubmitTip !== '') {
-		                jQuery(this.form).find('.fabrikSubmitWrapper').tooltip('destroy');
-		                this.toggleSubmitTipAdded = false;
-	                }
+                    if (this.options.toggleSubmitTip !== '') {
+                        jQuery(this.form).find('.fabrikSubmitWrapper').tooltip('destroy');
+                        this.toggleSubmitTipAdded = false;
+                    }
                 }
                 else {
                     submit.disabled = 'disabled';
                     submit.setStyle('opacity', 0.5);
-	                if (this.options.toggleSubmitTip !== '') {
-	                    if (!this.toggleSubmitTipAdded) {
-		                    //jQuery(this.form).find('.fabrikSubmitWrapper').data('toggle', 'tooltip');
-		                    //jQuery(this.form).find('.fabrikSubmitWrapper').attr('title', 'Your form cannot be saved until all inputs have been validated');
-		                    jQuery(this.form).find('.fabrikSubmitWrapper').tooltip();
-		                    this.toggleSubmitTipAdded = true;
-	                    }
-	                }
+                    if (this.options.toggleSubmitTip !== '') {
+                        if (!this.toggleSubmitTipAdded) {
+                            //jQuery(this.form).find('.fabrikSubmitWrapper').data('toggle', 'tooltip');
+                            //jQuery(this.form).find('.fabrikSubmitWrapper').attr('title', 'Your form cannot be saved until all inputs have been validated');
+                            jQuery(this.form).find('.fabrikSubmitWrapper').tooltip();
+                            this.toggleSubmitTipAdded = true;
+                        }
+                    }
                 }
                 Fabrik.fireEvent('fabrik.form.togglesubmit', [this, on]);
             }
