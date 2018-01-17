@@ -973,9 +973,11 @@ class FabrikFEModelGroup extends FabModel
 			$group->title            = FText::_($group->title);
 			$group->name             = $groupTable->name;
 			$group->displaystate     = ($group->canRepeat == 1 && $formModel->isEditable()) ? 1 : 0;
+			$group->minRepeat        = (int) $params->get('repeat_min', 1);
 			$group->maxRepeat        = (int) $params->get('repeat_max', -1);
-			$group->minRepeat        = $params->get('repeat_min', '') === '' ? 1 : (int) $params->get('repeat_min', '');
-			$group->numRepeatElement = $params->get('repeat_num_element', '');
+			$group->minRepeatElement = $params->get('repeat_min_element', $params->get('repeat_num_element', ''));
+			$group->maxRepeatElement = $params->get('repeat_max_element', $params->get('repeat_num_element', ''));
+			// Commented out in group.xml - not yet implemented but used in calc element huh!? (copied over from f2)
 			$group->showMaxRepeats   = $params->get('show_repeat_max', '0') == '1';
 			$group->minMaxErrMsg     = $params->get('repeat_error_message', '');
 			$group->minMaxErrMsg     = FText::_($group->minMaxErrMsg);

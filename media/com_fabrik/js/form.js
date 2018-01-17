@@ -156,19 +156,29 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
         watchRepeatNums: function () {
             Fabrik.addEvent('fabrik.form.elements.added', function (form) {
                 if (form.id === this.id && !this.watchRepeatNumsDone) {
-                    Object.each(this.options.numRepeatEls, function (name, key) {
-                        if (name !== '') {
-                            var el = this.formElements.get(name);
+                    Object.each(this.options.repeatEls, function (elNames, groupId) {
+                        minName = elNames[0];
+                        maxName = elNames[1];
+                        // Double changeevent call if same element
+                        // Can add code to do single changeevent if needed
+                        if (minName !== '') {
+                            var el = this.formElements.get(minName);
                             if (el) {
                                 el.addNewEventAux(el.getChangeEvent(), function(event) {
-                                    var v = el.getValue();
-                                    this.options.minRepeat[key] = v.toInt();
-                                    this.options.maxRepeat[key] = v.toInt();
+                                    this.options.minRepeat[groupId] = el.getValue().toInt();
                                     this.duplicateGroupsToMin();
-                                }.bind(this, el, key));
-                                var v = el.getValue();
-                                this.options.minRepeat[key] = v.toInt();
-                                this.options.maxRepeat[key] = v.toInt();
+                                }.bind(this, el, groupId));
+                                this.options.minRepeat[groupId] = el.getValue().toInt();
+                            }
+                        }
+                        if (maxName !== '') {
+                            var el = this.formElements.get(maxName);
+                            if (el) {
+                                el.addNewEventAux(el.getChangeEvent(), function(event) {
+                                    this.options.maxRepeat[groupId] = el.getValue().toInt();
+                                    this.duplicateGroupsToMin();
+                                }.bind(this, el, groupId));
+                                this.options.maxRepeat[groupId] = el.getValue().toInt();
                             }
                         }
                     }.bind(form));
