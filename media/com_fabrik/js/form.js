@@ -1792,7 +1792,7 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
                 }
             }));
 
-            this.form.addEvent('click:relay(.fabrikSubGroup)', function (e, subGroup) {
+/*            this.form.addEvent('click:relay(.fabrikSubGroup)', function (e, subGroup) {
                 var r = subGroup.getElement('.fabrikGroupRepeater');
                 if (r) {
                     subGroup.addEvent('mouseenter', function (e) {
@@ -1803,6 +1803,7 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
                     });
                 }
             }.bind(this));
+*/
         },
 
         /**
