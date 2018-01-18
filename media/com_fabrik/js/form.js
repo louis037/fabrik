@@ -2064,19 +2064,15 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
             }
 
             var clone = null;
-            var found = false;
             if (this.duplicatedGroups.has(groupId)) {
-                found = true;
-            }
-            if (!found) {
-                clone = subgroup.cloneNode(true);
-                this.duplicatedGroups.set(groupId, clone);
-            } else {
                 if (!subgroup) {
                     clone = this.duplicatedGroups.get(groupId);
                 } else {
                     clone = subgroup.cloneNode(true);
                 }
+            } else {
+                clone = subgroup.cloneNode(true);
+                this.duplicatedGroups.set(groupId, clone);
             }
             return clone;
         },
@@ -2112,6 +2108,8 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
             var i = e.target.getParent('.fabrikGroup').id.replace('group', '');
             var group_id = i.toInt();
             var group = document.id('group' + i);
+            // Avoid tooltip being cloned - delete rather than hide to avoid need to wait for fx
+            group.getElements('.tooltip').each(function (el) { el.dispose(); });
             var c = this.repeatGroupMarkers.get(i);
             var repeats = document.id('fabrik_repeat_group_' + i + '_counter').get('value').toInt();
             if (repeats >= this.options.maxRepeat[i] && this.options.maxRepeat[i] !== -1) {
@@ -2150,6 +2148,16 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
             }
 
             var clone = this.getSubGroupToClone(i);
+            var addButton = clone.getElement('.fabrikGroupRepeater.btn-group .addGroup i');
+            if (addButton) {
+                addButton.setProperty('title',Joomla.JText._('COM_FABRIK_ADD_GROUP'));
+            }
+            var delButton = clone.getElement('.fabrikGroupRepeater.btn-group .deleteGroup i');
+            if (delButton) {
+                delButton.setProperty('title',Joomla.JText._('COM_FABRIK_DELETE_GROUP'));
+            }
+            Fabrik.tips.attach(clone.getElements('.fabrikTip'));
+
             var tocheck = this.repeatGetChecked(group);
 
             // Check for table style group, which may or may not have a tbody in it
@@ -2238,7 +2246,7 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
                     // clone js element controller, set form to be passed by reference and
                     // not cloned
                     var ignore = el.unclonableProperties();
-                    var newEl = new CloneObject(el, true, ignore);
+                    var newEl = new CloneObject(el, true, []);
 
                     newEl.container = null;
                     newEl.options.repeatCounter = c;

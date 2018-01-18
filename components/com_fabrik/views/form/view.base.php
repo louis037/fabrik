@@ -832,6 +832,9 @@ class FabrikViewFormBase extends FabrikView
 		{
 			if ($groupModel->getGroup()->is_join)
 			{
+				JText::script('COM_FABRIK_ADD_GROUP');
+				JText::script('COM_FABRIK_DELETE_GROUP');
+
 				$joinParams = $groupModel->getJoinModel()->getJoin()->params;
 
 				if (!(is_a($joinParams, 'Registry') || is_a($joinParams, 'JRegistry')))
