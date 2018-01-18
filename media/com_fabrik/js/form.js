@@ -408,7 +408,6 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
                     id = bits.join('_');
                 }
             }
-
             // Create the fx key
             id = id.replace('fabrik_trigger_', '');
             if (id.slice(0, 6) === 'group_') {
@@ -502,6 +501,7 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
                     if (!groupfx) {
                         jQuery('#' + id).prop('disabled', true);
                         if (jQuery('#' + id + '.chzn-done').prop('tagName') === 'SELECT') {
+                            jQuery('#' + id).trigger("liszt:updated");
                             jQuery('#' + id).trigger("chosen:updated");
                         }
                     }
@@ -510,6 +510,7 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
                     if (!groupfx) {
                         jQuery('#' + id).prop('disabled', false);
                         if (jQuery('#' + id + '.chzn-done').prop('tagName') === 'SELECT') {
+                            jQuery('#' + id).trigger("liszt:updated");
                             jQuery('#' + id).trigger("chosen:updated");
                         }
                     }
@@ -521,6 +522,7 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
                         if (jQuery('#' + id).prop('tagName') === 'SELECT') {
                             jQuery('#' + id + ' option:not(:selected)').attr('disabled', true);
                             // if select is rendered as chosen then trigger a chosen update
+                            jQuery('#' + id).trigger("liszt:updated");
                             jQuery('#' + id).trigger("chosen:updated");
                         }
                     }
@@ -531,6 +533,7 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
                         if (jQuery('#' + id).prop('tagName') === 'SELECT') {
                             jQuery('#' + id + ' option').attr('disabled', false);
                             // if select is rendered as chosen then trigger a chosen update
+                            jQuery('#' + id).trigger("liszt:updated");
                             jQuery('#' + id).trigger("chosen:updated");
                         }
                     }
@@ -2240,9 +2243,6 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
                     newEl.container = null;
                     newEl.options.repeatCounter = c;
 
-                    // This seems to be wrong, as it'll set origId to the repeat ID with the _X appended.
-                    //newEl.origId = origelid;
-
                     if (hasSubElements && typeOf(subElementContainer) !== 'null') {
                         newEl.element = document.id(subElementContainer);
                         newEl.cloneUpdateIds(subElementContainer.id);
@@ -2251,7 +2251,6 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
                     } else {
                         newEl.cloneUpdateIds(lastinput.id);
                     }
-                    //newEl.reset();
                     newElementControllers.push(newEl);
                 }
             }.bind(this));
