@@ -501,31 +501,37 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
                 case 'disable':
                     if (!groupfx) {
                         jQuery('#' + id).prop('disabled', true);
+                        if (jQuery('#' + id + '.chzn-done').prop('tagName') === 'SELECT') {
+                            jQuery('#' + id).trigger("chosen:updated");
+                        }
                     }
                     break;
                 case 'enable':
                     if (!groupfx) {
                         jQuery('#' + id).prop('disabled', false);
+                        if (jQuery('#' + id + '.chzn-done').prop('tagName') === 'SELECT') {
+                            jQuery('#' + id).trigger("chosen:updated");
+                        }
                     }
                     break;
                 case 'readonly':
                     if (!groupfx) {
+                        jQuery('#' + id).prop('readonly', true);
                         // can't "readonly" a select, so disable all but selected option instead
                         if (jQuery('#' + id).prop('tagName') === 'SELECT') {
                             jQuery('#' + id + ' option:not(:selected)').attr('disabled', true);
-                        }
-                        else {
-                            jQuery('#' + id).prop('readonly', true);
+                            // if select is rendered as chosen then trigger a chosen update
+                            jQuery('#' + id).trigger("chosen:updated");
                         }
                     }
                     break;
                 case 'notreadonly':
                     if (!groupfx) {
+                        jQuery('#' + id).attr('readonly', false);
                         if (jQuery('#' + id).prop('tagName') === 'SELECT') {
                             jQuery('#' + id + ' option').attr('disabled', false);
-                        }
-                        else {
-                            jQuery('#' + id).prop('readonly', false);
+                            // if select is rendered as chosen then trigger a chosen update
+                            jQuery('#' + id).trigger("chosen:updated");
                         }
                     }
                     break;
