@@ -1954,6 +1954,7 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
             this.subGroups.set(i, subGroup.clone());
             if (subgroups.length <= 1) {
                 this.hideLastGroup(i, subGroup);
+                this.setRepeatButtons(group, i);
                 Fabrik.fireEvent('fabrik.form.group.delete.end', [this, e, i, delIndex]);
             } else {
                 var toel = subGroup.getPrevious();
@@ -2017,6 +2018,7 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
             // $$$ hugh - no, mustn't decrement this!  See comment in setupAll
             this.repeatGroupMarkers.set(i, this.repeatGroupMarkers.get(i) - 1);
             this.setRepeatGroupIntro(group, i);
+            this.setRepeatButtons(group, i);
         },
 
         hideLastGroup: function (groupId, subGroup) {
@@ -2134,6 +2136,7 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
                 }
 
                 this.repeatGroupMarkers.set(i, this.repeatGroupMarkers.get(i) + 1);
+                this.setRepeatButtons(group, i);
                 return;
             }
 
@@ -2304,6 +2307,31 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
             this.setRepeatGroupIntro(group, i);
             this.repeatGroupMarkers.set(i, this.repeatGroupMarkers.get(i) + 1);
             this.addedGroups.push('group' + i);
+            this.setRepeatButtons(group, i);
+        },
+
+        /**
+         * Enables/disables Repeat buttons depending on repeats vs. min / max
+         *
+         * @param   element  group  Group element
+         * @param   string   i      Group number
+         */
+        setRepeatButtons: function (group, i) {
+            var repeats = document.id('fabrik_repeat_group_' + i + '_counter').get('value').toInt();
+
+            if (repeats >= this.options.maxRepeat[i] && this.options.maxRepeat[i] !== -1) {
+                group.getElements('.addGroup.btn').addClass('disabled');
+            }
+            else {
+                group.getElements('.addGroup.btn').removeClass('disabled');
+            }
+
+            if (repeats <= this.options.minRepeat[i]) {
+                group.getElements('.deleteGroup.btn').addClass('disabled');
+            }
+            else {
+                group.getElements('.deleteGroup.btn').removeClass('disabled');
+            }
         },
 
         /**

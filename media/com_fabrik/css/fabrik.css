@@ -573,6 +573,18 @@ td.repeat-reduce ul.fabrikRepeatData li {
 	margin-top: 5px;
 }
 
+/** Make fabrik repeat group buttons central when zero repeat group rows **/
+.fabrikGroupRepeater.btn-group {
+	padding-top: 6px;
+	padding-right: 6px;
+}
+
+/** Show disabled cursor over diabled fabrik repeat group buttons **/
+.fabrikGroupRepeater .btn.disabled,
+.fabrikGroupRepeater .btn[disabled] {
+    cursor: not-allowed;
+}
+
 /** Workaround for Gantry's date class stomping on our date element class **/
 .fabrikGroup ul li.date {
 	font-weight: normal;
