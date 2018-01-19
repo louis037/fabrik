@@ -320,7 +320,7 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
                 c = document.id(id);
 
                 if (!c) {
-                    fconsole('Fabrik form::addElementFX: Group "' + id + '" does not exist.');
+                    if (Fabrik.debug) fconsole('Fabrik form::addElementFX: Group "' + id + '" does not exist.');
                     return false;
                 }
             } else if (id.slice(0, 8) === 'element_') {
@@ -328,16 +328,16 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
                 k = 'element' + id;
                 c = document.id(id);
                 if (!c) {
-                    fconsole('Fabrik form::addElementFX: Element "' + id + '" does not exist.');
+                    if (Fabrik.debug) fconsole('Fabrik form::addElementFX: Element "' + id + '" does not exist.');
                     return false;
                 }
                 c = c.getParent('.fabrikElementContainer');
                 if (!c) {
-                    fconsole('Fabrik form::addElementFX: Element "' + id + '.fabrikElementContainer" does not exist.');
+                    if (Fabrik.debug) fconsole('Fabrik form::addElementFX: Element "' + id + '.fabrikElementContainer" does not exist.');
                     return false;
                 }
             } else {
-                fconsole('Fabrik form::addElementFX: Not an element or group: ' + id);
+                if (Fabrik.debug) fconsole('Fabrik form::addElementFX: Not an element or group: ' + id);
                 return false;
             }
             if (c) {
@@ -904,7 +904,7 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
                 elements.each(function (el) {
                     if (typeOf(el) === 'array') {
                         if (typeOf(document.id(el[1])) === 'null') {
-                            fconsole('Fabrik form::addElements: Cannot add element "' + el[1] +
+                            if (Fabrik.debug) fconsole('Fabrik form::addElements: Cannot add element "' + el[1] +
                                 '" because it does not exist in HTML.');
                             return;
                         }
@@ -913,17 +913,17 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
                     }
                     else if (typeOf(el) === 'object') {
                         if (typeOf(document.id(el.options.element)) === 'null') {
-                            fconsole('Fabrik form::addElements: Cannot add element "' +
+                            if (Fabrik.debug) fconsole('Fabrik form::addElements: Cannot add element "' +
                                 el.options.element + '" because it does not exist in HTML.');
                             return;
                         }
                         added.push(this.addElement(el, el.options.element, gid));
                     }
                     else if (typeOf(el) !== 'null') {
-                        fconsole('Fabrik form::addElements: Cannot add unknown element: ' + el);
+                        if (Fabrik.debug) fconsole('Fabrik form::addElements: Cannot add unknown element: ' + el);
                     }
                     else {
-                        fconsole('Fabrik form::addElements: Cannot add null element.');
+                        if (Fabrik.debug) fconsole('Fabrik form::addElements: Cannot add null element.');
                     }
                 }.bind(this));
             }.bind(this));
@@ -935,7 +935,7 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
                     try {
                         added[i].attachedToForm();
                     } catch (err) {
-                        fconsole(added[i].options.element + ' attach to form:' + err);
+                        if (Fabrik.debug) fconsole('Fabrik form::addElements: Error attaching ' + added[i].options.element + ' to form:' + err);
                     }
                 }
             }
@@ -982,13 +982,13 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
                 });
             }
             if (!el) {
-                fconsole('Fabrik form::dispatchEvent: Cannot find element to add ' + action + ' event to: ' + elementId);
+                if (Fabrik.debug) fconsole('Fabrik form::dispatchEvent: Cannot find element to add ' + action + ' event to: ' + elementId);
             }
             else if (js !== '') {
                 el.addNewEvent(action, js);
             }
             else if (Fabrik.debug) {
-                fconsole('Fabrik form::dispatchEvent: Javascript empty for ' + action + ' event on: ' + elementId);
+                if (Fabrik.debug) fconsole('Fabrik form::dispatchEvent: Javascript empty for ' + action + ' event on: ' + elementId);
             }
         },
 
@@ -1014,7 +1014,7 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
                 return;
             }
             if (el.length === 0) {
-                fconsole('Fabrik form::watchValidation: Could not add ' + triggerEvent + ' event because element "' +
+                if (Fabrik.debug) fconsole('Fabrik form::watchValidation: Could not add ' + triggerEvent + ' event because element "' +
                     id + '" does not exist.');
                 return;
             }
@@ -1442,7 +1442,7 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
                                 'contentType': false
                             })
                                 .fail(function (text, error) {
-                                    fconsole(text + ': ' + error);
+                                    fconsole('Fabrik form::doSubmit: Ajax failed: ' + text + ': ' + error);
                                     self.showMainError(error);
                                     Fabrik.loader.stop(self.getBlock(), 'Error in returned JSON');
                                     self.toggleSubmit(true);
@@ -1453,7 +1453,7 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
                                     if (typeOf(json) === 'null') {
                                         // Stop spinner
                                         Fabrik.loader.stop(self.getBlock(), 'Error in returned JSON');
-                                        fconsole('error in returned json', json, txt);
+                                        fconsole('Fabrik form::doSubmit: Error in returned ajax json: ', json, txt);
                                         return;
                                     }
                                     // Process errors if there are some
@@ -1554,14 +1554,14 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
                                 'data': data,
                                 'method': this.options.ajaxmethod,
                                 onError: function (text, error) {
-                                    fconsole(text + ': ' + error);
+                                    fconsole('Fabrik form::doSubmit: OnError ' + text + ': ' + error);
                                     this.showMainError(error);
                                     Fabrik.loader.stop(this.getBlock(), 'Error in returned JSON');
                                     this.toggleSubmit(true);
                                 }.bind(this),
 
                                 onFailure: function (xhr) {
-                                    fconsole(xhr);
+                                    fconsole('Fabrik form::doSubmit: OnFailure ' + text + ': ' + xhr);
                                     Fabrik.loader.stop(this.getBlock(), 'Ajax failure');
                                     this.toggleSubmit(true);
                                 }.bind(this),
@@ -1570,7 +1570,7 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
                                     if (typeOf(json) === 'null') {
                                         // Stop spinner
                                         Fabrik.loader.stop(this.getBlock(), 'Error in returned JSON');
-                                        fconsole('error in returned json', json, txt);
+                                        fconsole('Fabrik form::doSubmit: Error in returned json:', json, txt);
                                         return;
                                     }
                                     // Process errors if there are some
@@ -1853,7 +1853,6 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
                 if (canRepeat.toInt() !== 1) {
                     return;
                 }
-
                 var repeat_counter = this.form.getElement('#fabrik_repeat_group_' + groupId + '_counter'),
                     repeat_rows, repeat_real, addButton, deleteButton, i, repeat_id_0, deleteEvent;
 
@@ -1898,7 +1897,7 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
                 }
                 else if (max > -1 && repeat_rows > max) {
                     // Delete groups
-                    for (i = repeat_rows; i > max; i--) {
+                    for (i = repeat_rows; i > max && i > 0; i--) {
                         var subGroup = jQuery(group.getElements('.fabrikSubGroup')).last()[0];
                         var b = jQuery(this.form.getElements('#group' + groupId + ' .deleteGroup')).last()[0];
                         var deleteButton = jQuery(b).find('[data-role=fabrik_delete_group]')[0];
@@ -1906,7 +1905,7 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
                         this.deleteGroup(deleteEvent, group, subGroup);
                     }
                 }
-                else if (min === 0 && repeat_real === 0) {
+                if (min === 0 && repeat_real === 0) {
                     // Create mock event
                     var subGroup = group.getElement('.fabrikSubGroup');
                     var deleteButton = this.form.getElement('#group' + groupId + ' .deleteGroup');
@@ -2450,7 +2449,7 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
                                 }
                             }
                         } else {
-                            fconsole(key + '_error' + ' not found (form show errors)');
+                            if (Fabrik.debug) fconsole('Fabrik form::showErrors: ' + key + '_error' + ' not found');
                         }
                     });
                 }
