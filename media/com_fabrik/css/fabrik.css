@@ -564,6 +564,12 @@ td.repeat-reduce ul.fabrikRepeatData li {
 	padding: 5px !important;
 	border-bottom: 1px solid #CCCCCC;
 }
+
+td.repeat-merge ul.fabrikRepeatData li:last-child,
+td.repeat-reduce ul.fabrikRepeatData li:last-child {
+	border-bottom: inherit;
+}
+
 /*********************************************************/
 /************  Misc. Workarounds *************************/
 /*********************************************************/
