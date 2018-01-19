@@ -598,7 +598,22 @@ class PlgFabrik_ElementDatabasejoin extends PlgFabrik_ElementList
 
 		$db->setQuery($sql);
 		FabrikHelperHTML::debug((string) $db->getQuery(), $this->getElement()->name . ' databasejoin element: get options query');
-		$this->optionVals[$sqlKey] = $db->loadObjectList();
+		try {
+			$this->optionVals[$sqlKey] = $db->loadObjectList();
+		}
+		catch (RuntimeException $e)
+		{
+			$msg = 'FABRIK error: Incorrect query for the databasejoin "' . $this->getElement()->name . '"';
+			if (FabrikHelperHTML::isDebug(true))
+			{
+				if (!is_string($sql))
+				{
+					$sql = $sql->__toString();
+				}
+				$msg .= ': ' . $e->getMessage() . ': ' . $sql;
+			}
+			throw new RuntimeException($msg, $e->getCode());
+		}
 		FabrikHelperHTML::debug($this->optionVals, 'databasejoin elements');
 
 		if (!is_array($this->optionVals[$sqlKey]))
