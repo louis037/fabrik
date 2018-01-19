@@ -1862,11 +1862,16 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
 
                 repeat_rows = repeat_real = repeat_counter.value.toInt();
 
+                // Check if first and only row is a new row so we can reduce rows shown to zero
                 if (repeat_rows === 1) {
-                    repeat_id_0 = this.form.getElement('#' + this.options.group_pk_ids[groupId] + '_0');
+                    var repeat_id_0 = this.form.getElement('#' + this.options.group_pk_ids[groupId] + '_0');
+                    if (typeOf(repeat_id_0) !== 'null') {
+                        // Do not reduce rows shown to zero if there are validation errors
+                        var fabErrors = repeat_id_0.getElements('.fabrikError');
 
-                    if (typeOf(repeat_id_0) !== 'null' && repeat_id_0.value === '') {
-                        repeat_real = 0;
+                        if (typeOf(fabErrors) === 'null' && repeat_id_0.value === '') {
+                            repeat_real = 0;
+                        }
                     }
                 }
 
