@@ -400,11 +400,10 @@ define(['jquery'], function (jQuery) {
             this.renewEvents();
             if (this.element.hasClass('chzn-done')) {
                 this.element.removeClass('chzn-done');
-                this.element.removeProperty('style');
-                this.element.removeProperty('readonly');
-                this.element.removeProperty('disabled');
+                this.element.removeProperties('style', 'readonly', 'disabled');
                 this.element.getChildren('option').each(function(el) {
                     el.removeProperty('disabled');
+                    el.removeAttribute('selected');
                 });
                 this.element.addClass('chzn-select');
                 this.element.getParent().getElement('.chzn-container').destroy();
