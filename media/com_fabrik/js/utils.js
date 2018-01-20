@@ -6,11 +6,48 @@
  */
 function fconsole() {
     if (typeof (window.console) !== 'undefined') {
-        var str = '', i;
+
+        var output = [], current = null, i;
         for (i = 0; i < arguments.length; i++) {
-            str += arguments[i] + ' ';
+            var arg = arguments[i];
+            if (current === null) {
+                current = arg;
+            } else if (typeof current === 'object') {
+                if (current instanceof Element || current instanceof HTMLDocument) {
+                    output.push(current.cloneNode(true));
+                } else if (current instanceof Array) {
+                    output.push(current.slice(0));
+                } else {
+                    output.push(Object.assign({},current));
+                }
+                current = arg;
+            } else if (typeof arg === 'object') {
+                output.push(current);
+                current = arg;
+            } else { // both are strings or can be implicitly converted to strings
+                current += ' ' + arg;
+            }
         }
-        console.log(str);
+        if (typeof current === 'object') {
+            if (current instanceof Element || current instanceof HTMLDocument) {
+                output.push(current.cloneNode(true));
+            } else if (current instanceof Array) {
+                output.push(current.slice(0));
+            } else {
+                output.push(Object.assign({},current));
+            }
+        } else {
+            output.push(current);
+        }
+        if (output.length === 1) {
+            console.log(output[0]);
+        } else {
+            console.groupCollapsed(output[0]);
+            for (i = 1; i < output.length; i++) {
+                console.log(output[i]);
+            }
+            console.groupEnd();
+        }
     }
 }
 
