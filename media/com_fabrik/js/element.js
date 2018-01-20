@@ -271,6 +271,22 @@ define(['jquery'], function (jQuery) {
             this.addNewEvent(action, js);
         },
 
+        /**
+         * Run unload events if repeat group row is being deleted
+         */
+        runUnloadEvents: function () {
+            var events = this.events['unload'];
+            if (events) {
+                for (var i = 0; i < events.length; i++) {
+                    try {
+                        eval(js[i]);
+                    } catch (error) {
+                        fconsole('Error in', this.element.id , 'unload event javascript:', error.name, '-', error.message, "\r\n", js[i]);
+                    }
+                }
+            }
+        },
+
         validate: function () {
         },
 

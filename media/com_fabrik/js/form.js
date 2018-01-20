@@ -1970,6 +1970,15 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
                 this.setRepeatButtons(group, i);
                 Fabrik.fireEvent('fabrik.form.group.delete.end', [this, e, i, delIndex]);
             } else {
+
+                // Run unload events on each element being deleted
+                subGroup.getElements('.fabrikinput').each(function (dom,i,els) {
+                    var object = Fabrik.getElementObject(els[i].id);
+                    if (object) {
+                        object.runUnloadEvents();
+                    }
+                });
+
                 var toel = subGroup.getPrevious();
                 /*
                 var myFx = new Fx.Tween(subGroup, {
