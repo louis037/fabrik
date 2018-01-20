@@ -400,7 +400,9 @@ define(['jquery'], function (jQuery) {
             this.renewEvents();
             if (this.element.hasClass('chzn-done')) {
                 this.element.removeClass('chzn-done');
-                this.element.removeProperties('style', 'readonly', 'disabled');
+                this.element.removeProperty('style');
+                this.element.removeAttribute('readonly');
+                this.element.removeProperty('disabled');
                 this.element.getChildren('option').each(function(el) {
                     el.removeProperty('disabled');
                     el.removeAttribute('selected');
