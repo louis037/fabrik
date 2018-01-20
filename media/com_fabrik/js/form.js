@@ -517,7 +517,7 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
                     break;
                 case 'readonly':
                     if (!groupfx) {
-                        jQuery('#' + id).prop('readonly', true);
+                        jQuery('#' + id).attr('readonly', true);
                         // can't "readonly" a select, so disable all but selected option instead
                         if (jQuery('#' + id).prop('tagName') === 'SELECT') {
                             jQuery('#' + id + ' option:not(:selected)').attr('disabled', true);
