@@ -324,35 +324,14 @@ class FabrikFEModelGroup extends FabModel
 			}
 		}
 
-		/*
-		* The following code has been commented out to avoid a chicken vs. egg situation where:
-		* 1. Group is not rendered because all elements are canView == false
-		* 2. Elements are false only because they are only editable when user_id matches a field and field has no data pre-render
-		*
-		* In the long run canView needs to distinguish (by parameter) between:
-		* A. Pre-render where view is assumed to be true if an element is set for view/edit by user_id; and
-		* B. Post-render where the actual element value should be checked.
-
-		$elementModels = $this->getPublishedElements();
-		$this->canView = false;
-
-		foreach ($elementModels as $elementModel)
-		{
-			// $$$ hugh - added canUse() check, corner case, see:
-			// http://fabrikar.com/forums/showthread.php?p=111746#post111746
-			if (!$elementModel->canView() && !$elementModel->canUse())
-			{
-				continue;
-			}
-
-			$this->canView = true;
-			break;
-		}
-
-		if (!$this->canView)
-		{
-			return $this->canView;
-		} */
+		/* 
+		* Code to avoid querying the group if user has no access to every element has been removed
+		* because you need to include the group in the query even if e.g.:
+		* 1. All elements are viewable based on userid matching a field 
+		*    because you don't know if they match until you have run the query
+		* 2. The group could contain elements which Fabrik needs internally but which
+		*    are not viewable by the user (like pk or field that holds the userid etc.)
+		*/
 
 		/*
 		* Sigh - seems that the repeat group 'repeat_group_show_first' property has been bastardized to be a setting
