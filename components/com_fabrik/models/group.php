@@ -324,6 +324,15 @@ class FabrikFEModelGroup extends FabModel
 			}
 		}
 
+		/*
+		* The following code has been commented out to avoid a chicken vs. egg situation where:
+		* 1. Group is not rendered because all elements are canView == false
+		* 2. Elements are false only because they are only editable when user_id matches a field and field has no data pre-render
+		*
+		* In the long run canView needs to distinguish (by parameter) between:
+		* A. Pre-render where view is assumed to be true if an element is set for view/edit by user_id; and
+		* B. Post-render where the actual element value should be checked.
+
 		$elementModels = $this->getPublishedElements();
 		$this->canView = false;
 
@@ -343,15 +352,16 @@ class FabrikFEModelGroup extends FabModel
 		if (!$this->canView)
 		{
 			return $this->canView;
-		}
+		} */
 
 		/*
-		 * Sigh - seems that the repeat group 'repeat_group_show_first' property has been bastardized to be a setting
+		* Sigh - seems that the repeat group 'repeat_group_show_first' property has been bastardized to be a setting
 		* that is applicable to a group even when not in a repeat group, and has basically become a standard group setting.
 		* My bad for labelling it poorly to start with.
 		* So, now if this is set to 'no' the group is not shown but canView was returning true - doh! Caused issues in
 		* multi page forms where we were trying to set/check errors in groups which were not attached to the form.
 		*/
+		$this->canView = true;
 		$formModel = $this->getFormModel();
 		$showGroup = $params->get('repeat_group_show_first', '1');
 
