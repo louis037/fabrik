@@ -39,12 +39,15 @@ function fconsole() {
         } else {
             output.push(current);
         }
-        if (output.length === 1) {
+        if (output.length === 1 && !Fabrik.debug) {
             console.log(output[0]);
         } else {
             console.groupCollapsed(output[0]);
             for (i = 1; i < output.length; i++) {
                 console.log(output[i]);
+            }
+            if (Fabrik.debug) {
+              console.trace('Stack trace');
             }
             console.groupEnd();
         }
