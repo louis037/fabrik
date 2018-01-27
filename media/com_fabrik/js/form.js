@@ -2276,6 +2276,11 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
                 }
             }.bind(this));
 
+            // Sophist: we need to create html before running cloned and reset on elements
+            var o = {};
+            o[i] = newElementControllers;
+            this.addElements(o);
+
             newElementControllers.each(function (newEl) {
                 newEl.cloned(c);
                 // $$$ hugh - moved reset() from end of loop above, otherwise elements with un-cloneable object
@@ -2298,9 +2303,6 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
                     newEl.resetEvents();
                 }
             }.bind(this));
-            var o = {};
-            o[i] = newElementControllers;
-            this.addElements(o);
 
             /**
              * Only scroll the window if the new element is not visible and 'scroll' arg true
