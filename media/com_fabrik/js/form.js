@@ -1919,6 +1919,7 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
                 }
 
                 this.setRepeatGroupIntro(group, groupId);
+                this.setRepeatButtons(group, groupId);
             }.bind(this));
         },
 
@@ -1967,7 +1968,6 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
             this.subGroups.set(i, subGroup.clone());
             if (subgroups.length <= 1) {
                 this.hideLastGroup(i, subGroup);
-                this.setRepeatButtons(group, i);
                 Fabrik.fireEvent('fabrik.form.group.delete.end', [this, e, i, delIndex]);
             } else {
 
