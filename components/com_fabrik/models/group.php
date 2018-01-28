@@ -324,10 +324,10 @@ class FabrikFEModelGroup extends FabModel
 			}
 		}
 
-		/* 
+		/*
 		* Code to avoid querying the group if user has no access to every element has been removed
 		* because you need to include the group in the query even if e.g.:
-		* 1. All elements are viewable based on userid matching a field 
+		* 1. All elements are viewable based on userid matching a field
 		*    because you don't know if they match until you have run the query
 		* 2. The group could contain elements which Fabrik needs internally but which
 		*    are not viewable by the user (like pk or field that holds the userid etc.)
@@ -340,25 +340,23 @@ class FabrikFEModelGroup extends FabModel
 		* So, now if this is set to 'no' the group is not shown but canView was returning true - doh! Caused issues in
 		* multi page forms where we were trying to set/check errors in groups which were not attached to the form.
 		*/
-		$this->canView = true;
 		$formModel = $this->getFormModel();
 		$showGroup = $params->get('repeat_group_show_first', '1');
 
-		if ($showGroup == 0)
+		switch ($showGroup) // Show in form/details:
 		{
-			$this->canView = false;
-		}
-
-		// If editable but only show group in details view:
-		if (!($formModel->isEditable() && $showGroup == 2))
-		{
-			$this->canView = true;
-		}
-
-		// If form not editable and show group in form view:
-		if (!$formModel->isEditable() && $showGroup == 3)
-		{
-			$this->canView = false;
+			case 0: // No
+				$this->canView = false;
+				break;
+			case 2: // Details only
+				$this->canView = !$formModel->isEditable();
+				break;
+			case 3: // Form only
+				$this->canView = $formModel->isEditable();
+				break;
+			default:
+				$this->canView = true;
+				break;
 		}
 
 		return $this->canView;
