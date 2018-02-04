@@ -64,8 +64,6 @@ class JFormFieldFabrikeditor extends JFormFieldTextArea
 		$onChange = $onChange ? ' onchange="' . (string) $onChange . '"' : '';
 
 		// Joomla 3 version
-		FabrikWorker::toBoolean($this->getAttribute('highlightpk', false), false);
-
 		$mode      = $this->getAttribute('mode', 'html');
 		$theme     = $this->getAttribute('theme', 'github');
 		$height    = $this->getAttribute('height', '142px');
