@@ -15,7 +15,7 @@ defined('_JEXEC') or die('Restricted access');
 ?>
 <div class="tab-pane active" id="tab-details">
 	<fieldset class="form-horizontal">
-		<div class="span6">
+		<div>
 			<legend><?php echo FText::_('COM_FABRIK_DETAILS'); ?></legend>
 			<?php foreach ($this->form->getFieldset('details') as $this->field) :
 				echo $this->loadTemplate('control_group');
