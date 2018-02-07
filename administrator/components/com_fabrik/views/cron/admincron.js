@@ -47,6 +47,7 @@ define(['jquery', 'admin/pluginmanager'], function (jQuery, PluginManager) {
 				'update'    : document.id('plugin-container'),
 				'onComplete': function () {
 					this.updateBootStrap();
+					FabrikAdmin.reTip();
 				}.bind(this)
 
 			}).send();
