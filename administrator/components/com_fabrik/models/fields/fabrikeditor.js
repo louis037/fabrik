@@ -8,10 +8,36 @@
 /*jshint mootools: true */
 /*global Fabrik:true, fconsole:true, Joomla:true, CloneObject:true, $H:true,unescape:true,Asset:true */
 
-define(["lib/ace/src-min-noconflict/ace"], function (aceModule) {
+define(["jquery", "lib/ace/src-min-noconflict/ace"], function (jQuery, aceModule) {
     FabrikEditor = function(id, theme, mode, height, width) {
         var field = document.getElementById(id);
         if (field === null) {
+            // This could be because this is the hidden template version in a Joomla subform
+            // which is sneakily stored in a script node.
+            // So check for and handle this situation before issuing error message.
+            if (id.includes('X__')) {
+                // Might be a subform - check for specific script
+                var subformScript = document.querySelector('script.subform-repeatable-template-section');
+                if (subformScript !== null && (subformScript.text || subformScript.textContent).includes(id)) {
+                    // Fix for Joomla subforms as suggested at https://docs.joomla.org/Subform_form_field_type
+                    jQuery(document).on('subform-row-add', function(event, row) {
+                        var base = row.getAttribute('data-base-name');
+                        var group = row.getAttribute('data-group');
+                        if (!group.startsWith(base)) {
+                            fconsole('fabrikeditor: new subform row, but data-group=', group, 'does not start with data-base-name=', base);
+                            return;
+                        }
+                        var idx = group.slice(base.length);
+                        var newId = id.replace('_' + base + 'X__', '_' + base + idx + '__');
+                        if (row.getElementById(newId) !== null) {
+                            FabrikEditor(newId, theme, mode, height, width);
+                        } else {
+                            fconsole('fabrikeditor: Clone not found for', id);
+                        }
+                    });
+                    return;
+                }
+            }
             fconsole("fabrikeditor: Cannot find field", id);
             return;
         }
@@ -34,7 +60,10 @@ define(["lib/ace/src-min-noconflict/ace"], function (aceModule) {
         var aceId = id + "_" + ("00000" + (Math.random() * 0xffffff).toString(16)).slice(-6);
         containerDiv = field.parentElement;
         containerDiv.id = aceId + "-aceContainer";
-        containerDiv.style = "position:relative; width:" + width + "; height:" + height + ";";
+        // We can't know the true dimensions of the editor until it is instantiated and we get access to the internals
+        // so this is an estimate which will be updated by onrender as soon as ace is rendered
+        var h = height.slice(-2) === 'px' ? height : height * 14 + 2;
+        containerDiv.style = "position:relative; width:" + width + "; height:" + h + ";";
         aceDiv = containerDiv.querySelector("[id$='-ace']");
         if (!aceDiv) {
             fconsole("fabrikeditor: cannot find ace container to randomise", id + "-ace");
@@ -42,7 +71,7 @@ define(["lib/ace/src-min-noconflict/ace"], function (aceModule) {
         }
         aceDiv.id = aceId + "-ace";
         aceDiv.className += " fbeditor";
-        FbEditor = ace.edit(aceId + "-ace");
+        var FbEditor = ace.edit(aceId + "-ace");
         FbEditor.setTheme("ace/theme/" + theme);
         var aceMode = mode === "php" ? {path:"ace/mode/php", inline:true} : "ace/mode/" + mode;
         FbEditor.getSession().setMode(aceMode);
