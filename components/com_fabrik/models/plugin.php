@@ -467,8 +467,8 @@ class FabrikPlugin extends JPlugin
 			{
 				if ($j3)
 				{
-					$str[] = '<a class="btn" href="#" data-button="addButton">' . FabrikHelperHTML::icon('icon-plus', FText::_('COM_FABRIK_ADD')) . '</a>';
-					$str[] = '<a class="btn" href="#" data-button="deleteButton">' . FabrikHelperHTML::icon('icon-minus', FText::_('COM_FABRIK_REMOVE')) . '</a>';
+					$str[] = '<a class="btn btn-success" href="#" data-button="addButton">' . FabrikHelperHTML::icon('icon-plus', FText::_('COM_FABRIK_ADD')) . '</a>';
+					$str[] = '<a class="btn btn-danger" href="#" data-button="deleteButton">' . FabrikHelperHTML::icon('icon-minus', FText::_('COM_FABRIK_REMOVE')) . '</a>';
 				}
 				else
 				{
