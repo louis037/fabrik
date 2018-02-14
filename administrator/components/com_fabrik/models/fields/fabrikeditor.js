@@ -12,13 +12,14 @@ define(["jquery", "lib/ace/src-min-noconflict/ace"], function (jQuery, aceModule
     FabrikEditor = function(id, theme, mode, height, width) {
         var field = document.getElementById(id);
         if (field === null) {
-            // This could be because this is the hidden template version in a Joomla subform
-            // which is sneakily stored in a script node.
-            // So check for and handle this situation before issuing error message.
+            // Likely to be because the element this has been called on is the hidden Joomla subform template
+            // (which is sneakily stored in a script node).
             if (id.includes('X__')) {
                 // Might be a subform - check for specific script
                 var subformScript = document.querySelector('script.subform-repeatable-template-section');
                 if (subformScript !== null && (subformScript.text || subformScript.textContent).includes(id)) {
+                    // ALmost certainly a Joomla subform, so create an event hook which will look for new matching element
+                    // and initiate BarikEditor on it.
                     // Fix for Joomla subforms as suggested at https://docs.joomla.org/Subform_form_field_type
                     jQuery(document).on('subform-row-add', function(event, row) {
                         var base = row.getAttribute('data-base-name');
@@ -41,14 +42,40 @@ define(["jquery", "lib/ace/src-min-noconflict/ace"], function (jQuery, aceModule
             fconsole("fabrikeditor: Cannot find field", id);
             return;
         }
-        // Check if we have parent divs needed
+
+        // Fabrik repeatgroup functionality works differently. If this is row 0, then
+        // process a repeatgroup add event in a similar way.
+        var name = field.getAttribute('name');
+        var idx = name.split('][')[2];
+        if (idx && idx.replace(']', '') === "0") {
+            document.addEventListener('fabrikadmin.repeatgroup.add', function(e) {
+                var baseIdParts = field.id.split('-');
+                var editors = e.detail.querySelectorAll('textarea.FbEditor');
+                for (var ed of editors) {
+                    var rptIdParts = ed.id.split('-');
+                    var count = 0;
+                    for (var i = 0; i < baseIdParts.length; i++) {
+                        if (baseIdParts[i] === rptIdParts[i]) {
+                            count++;
+                        } else if (baseIdParts[i] !== "0" || !rptIdParts[i] && !rptIdParts[i].isInteger()) {
+                            break;
+                        }
+                    }
+                    if (count === baseIdParts.length - 1) {
+                        FabrikEditor(ed.id, theme, mode, height, width);
+                    }
+                }
+            });
+        }
+
+        // Check if we have parent divs already exist because e.g. element has been cloned
         var parent = field.parentElement, containerDiv, aceDiv;
         if (parent.tag !== "div" || parent.id.slice(-13) !== "-aceContainer") {
             // Add parent and sibling containers)
             containerDiv = document.createElement("div");
             containerDiv.id = id + "-aceContainer";
             aceDiv = document.createElement("div");
-            aceDiv.id = id + "-ace";
+                aceDiv.id = id + "-ace";
             containerDiv.appendChild(aceDiv);
             containerDiv = parent.insertBefore(containerDiv, field);
             containerDiv.appendChild(field);
@@ -70,7 +97,7 @@ define(["jquery", "lib/ace/src-min-noconflict/ace"], function (jQuery, aceModule
             return;
         }
         aceDiv.id = aceId + "-ace";
-        aceDiv.className += " fbeditor";
+        aceDiv.className += "FbEditorAce";
         var FbEditor = ace.edit(aceId + "-ace");
         FbEditor.setTheme("ace/theme/" + theme);
         var aceMode = mode === "php" ? {path:"ace/mode/php", inline:true} : "ace/mode/" + mode;
