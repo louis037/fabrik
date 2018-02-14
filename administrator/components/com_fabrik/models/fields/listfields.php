@@ -186,7 +186,9 @@ class JFormFieldListfields extends JFormFieldList
 			$aEls = $res;
 		}
 
-		array_unshift($aEls, JHTML::_('select.option', '', FText::_('COM_FABRIK_SELECT_ELEMENT')));
+		if (count($aEls) !== 1) {
+			array_unshift($aEls, JHTML::_('select.option', '', FText::_('COM_FABRIK_SELECT_ELEMENT')));
+		}
 
 		return $aEls;
 	}
