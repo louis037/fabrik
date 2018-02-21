@@ -32,7 +32,7 @@ class JFormFieldFabrikeditor extends JFormFieldTextArea
 	 * @var    string
 	 * @since  1.6
 	 */
-	public $type = 'Fabrikeditor';
+	public $type = 'FabrikEditor';
 
 	/**
 	 * Method to get the field input markup for the editor area
@@ -76,31 +76,32 @@ class JFormFieldFabrikeditor extends JFormFieldTextArea
 		}
 
 		// Joomla 3 version
-		$mode      = $this->getAttribute('mode', 'html');
-		$theme     = $this->getAttribute('theme', 'github');
-		$height    = $this->getAttribute('height', '10');
-		$width     = $this->getAttribute('width', '100%');
+
+		$opts = new stdClass;
+		$opts->mode   = $this->getAttribute('mode', 'html');
+		$opts->theme  = $this->getAttribute('theme', 'github');
+		$opts->height = $this->getAttribute('height', '10');
+		$opts->width  = $this->getAttribute('width', '100%');
+		$opts        = json_encode($opts);
+
+		// If ace then set underlying textarea to 1x1.
+		$this->element['cols'] = 1;
+		$this->element['rows'] = 1;
+		$columns = ' cols="1"';
+		$rows    = ' rows="1"';
+		$editor = '<textarea name="' . $this->name . '" id="' . $this->id . '"'
+			. $columns . $rows . $class . $disabled . $onChange . $required . '>'
+			. $this->value . '</textarea>';
 
 		FabrikHelperHTML::framework();
 		FabrikHelperHTML::iniRequireJS();
 
-		$script = 'FabrikEditor("' . implode('","', array(
-				$this->id,
-				$theme,
-				$mode,
-				$height,
-				$width
-			)) . '");';
+		$script = "FabrikAdmin.model.fields.fabrikeditor['$this->id'] = new fabrikeditorElement('$this->id', $opts);";
 
 		$src = array(
-			'Ace' => 'media/com_fabrik/js/lib/ace/src-min-noconflict/ace.js',
-			'Fabrik' => 'media/com_fabrik/js/fabrik.js',
 			'FbEditorModule' => 'administrator/components/com_fabrik/models/fields/fabrikeditor.js',
 		);
 		FabrikHelperHTML::script($src, $script);
-
-		$this->element['cols'] = 1;
-		$this->element['rows'] = 1;
 
 		return $editor;
 	}
