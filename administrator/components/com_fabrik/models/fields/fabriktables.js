@@ -5,6 +5,13 @@
  * @license:   GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
+/*jshint mootools: true */
+/*global Fabrik:true, fconsole:true, Joomla:true, CloneObject:true, $H:true,unescape:true,Asset:true */
+
+if (typeOf(FabrikAdmin.model.fields.fabriktable) === 'null') {
+	FabrikAdmin.model.fields.fabriktable = {};
+}
+
 var fabriktablesElement = new Class({
 
 	Implements: [Options, Events],
@@ -12,12 +19,17 @@ var fabriktablesElement = new Class({
 	options: {
 		conn: null,
 		connInRepeat: true,
-		container: ''
 	},
 
 	initialize : function (el, options) {
 		this.el = el;
 		this.setOptions(options);
+		// Fix up Joomla subform connection ids
+		if (this.options.conn.indexOf('X__') !== -1 && this.options.conn.slice(-2) === '-0') {
+			var cid = this.options.conn.split('-');
+			cid.pop();
+			this.options.conn = cid.join('-');
+		}
 		this.elements = [];
 		this.elementLists = $H({}); // keyed on specific element options
 		this.waitingElements = $H({}); // keyed on specific element options
@@ -50,12 +62,10 @@ var fabriktablesElement = new Class({
 		}
 		this.loader = document.id(this.el.id + '_loader');
 
-		var self = this;
-		
 		if (this.cnn.hasClass('chzn-done')) {
 			jQuery('#' + this.cnn.id).on('change', function (event) {
-				document.id(self.cnn).fireEvent('change', new Event.Mock(document.id(self.cnn), 'change'));				
-			});	
+				document.id(this.cnn).fireEvent('change', new Event.Mock(document.id(this.cnn), 'change'));
+			}.bind(this));
 		}
 
 		this.cnn.addEvent('change', function (e) {
@@ -64,10 +74,10 @@ var fabriktablesElement = new Class({
 
 		if (this.el.hasClass('chzn-done')) {
 			jQuery('#' + this.el.id).on('change', function (event) {
-				document.id(self.el.id).fireEvent('change', new Event.Mock(document.id(self.el.id), 'change'));				
-			});	
+				document.id(self.el.id).fireEvent('change', new Event.Mock(document.id(self.el.id), 'change'));
+			});
 		}
-		
+
 		this.el.addEvent('change', function (e) {
 			this.updateElements(e);
 		}.bind(this));
@@ -259,20 +269,34 @@ var fabriktablesElement = new Class({
 		}
 
 	},
+
 	// only called from repeat viz admin interface i think
 	cloned : function (newid, counter) {
+		// need to update watch connection id?
 		if (this.options.connInRepeat === true) {
-			// table needs to update watch connection id
-			var cid = this.options.conn.split('-');
-			cid.pop();
-			this.options.conn = cid.join('-') + '-' + counter;
+			var fIdx = "-" + counter.toString();
+			var jIdx = counter.toString() + '__';
+			if (newid.indexOf(jIdx) !== -1) {
+				// Joomla subForm
+				this.options.conn = this.options.conn.replace('X__', jIdx);
+			} else if (newid.slice(-fIdx.length) === fIdx) {
+				// Fabrik repeatgroup
+				var cid = this.options.conn.split('-');
+				cid.pop();
+				this.options.conn = cid.join('-') + fIdx;
+			}
 		}
+
+		// Change this elements image id so that indication of ajax works.
+		var img = document.id(newid).getParent().getElement('img');
+		img.id = newid + '_loader';
+
 		this.el = newid;
 		this.elements = [];
 		this.elementLists = $H({});
 		this.waitingElements = $H({});
 		this.setUp();
 		FabrikAdmin.model.fields.fabriktable[this.el.id] = this;
-	}
+	},
 
 });
