@@ -105,7 +105,6 @@ class JFormFieldFabrikTables extends JFormFieldList
 			// Do not adjust connection parameter if connection_in_repeat==false
 			if ($connectionInRepeat) {
 
-
 				if ($this->form->repeat)
 				{
 					// In repeat fieldset/group

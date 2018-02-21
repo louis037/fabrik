@@ -274,7 +274,7 @@ var fabriktablesElement = new Class({
 
 	},
 
-	// only called from repeat viz admin interface i think
+	// Called from back end repeatgroup and joomla subform-repeated
 	cloned : function (newid, counter) {
 		// need to update watch connection id?
 		if (this.options.connInRepeat === true) {
