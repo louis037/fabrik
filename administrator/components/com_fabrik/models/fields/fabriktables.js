@@ -9,7 +9,7 @@
 /*global Fabrik:true, fconsole:true, Joomla:true, CloneObject:true, $H:true,unescape:true,Asset:true */
 
 FabrikAdmin.model.fields.fabriktable = FabrikAdmin.model.fields.fabriktable || {};
-FabrikAdmin.model.cache			  = FabrikAdmin.model.cache			  || {};
+FabrikAdmin.model.cache              = FabrikAdmin.model.cache              || {};
 FabrikAdmin.model.cache.fabriktable  = FabrikAdmin.model.cache.fabriktable  || {};
 
 var fabriktablesElement = new Class({
