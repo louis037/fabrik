@@ -8,9 +8,9 @@
 /*jshint mootools: true */
 /*global Fabrik:true, fconsole:true, Joomla:true, CloneObject:true, $H:true,unescape:true,Asset:true */
 
-if (typeOf(FabrikAdmin.model.fields.fabriktable) === 'null') {
-	FabrikAdmin.model.fields.fabriktable = {};
-}
+FabrikAdmin.model.fields.fabriktable = FabrikAdmin.model.fields.fabriktable || {};
+FabrikAdmin.model.cache			  = FabrikAdmin.model.cache			  || {};
+FabrikAdmin.model.cache.fabriktable  = FabrikAdmin.model.cache.fabriktable  || {};
 
 var fabriktablesElement = new Class({
 
@@ -22,7 +22,7 @@ var fabriktablesElement = new Class({
 	},
 
 	initialize : function (el, options) {
-		this.el = el;
+		this.el = document.id(el);
 		this.setOptions(options);
 		// Fix up Joomla subform connection ids
 		if (this.options.conn.indexOf('X__') !== -1 && this.options.conn.slice(-2) === '-0') {
@@ -55,7 +55,6 @@ var fabriktablesElement = new Class({
 	},
 
 	setUp : function () {
-		this.el = document.id(this.el);
 		this.cnn = document.id(this.options.conn);
 		if (this.cnn === 'null') {
 			return;
@@ -98,6 +97,12 @@ var fabriktablesElement = new Class({
 		if (!cid) {
 			return;
 		}
+
+		if (FabrikAdmin.model.cache.fabriktable[cid]) {
+			this.updateMeSelect(FabrikAdmin.model.cache.fabriktable[cid]);
+			return;
+		}
+
 		if (this.loader) {
 			this.loader.show();
 		}
@@ -120,23 +125,11 @@ var fabriktablesElement = new Class({
 					if (opts.err) {
 						alert(opts.err);
 					} else {
-						this.el.empty();
-						opts.each(function (opt) {
-							var o = {
-								'value' : opt.id
-							};
-							if (opt.id === this.options.value) {
-								o.selected = 'selected';
-							}
-							new Element('option', o).appendText(opt.label).inject(this.el);
-						}.bind(this));
+						FabrikAdmin.model.cache.fabriktable[cid] = opts;
+						this.updateMeSelect(opts);
 						if (this.loader) {
 							this.loader.hide();
 						}
-						if (this.el.hasClass('chzn-done')) {
-							jQuery("#" + this.el.id).trigger("liszt:updated");
-						}
-						this.updateElements();
 					}
 				}
 			}.bind(this),
@@ -153,6 +146,23 @@ var fabriktablesElement = new Class({
 		 * as it is polled on form save to ensure that elements are not in a loading state
 		 */
 		Fabrik.requestQueue.add(myAjax);
+	},
+
+	updateMeSelect : function(opts) {
+		this.el.empty();
+		opts.each(function (opt) {
+			var o = {
+				'value' : opt.id
+			};
+			if (opt.id === this.options.value) {
+				o.selected = 'selected';
+			}
+			new Element('option', o).appendText(opt.label).inject(this.el);
+		}.bind(this));
+		if (this.el.hasClass('chzn-done')) {
+			jQuery("#" + this.el.id).trigger("liszt:updated");
+		}
+		this.updateElements();
 	},
 
 	updateElements : function () {
@@ -291,7 +301,7 @@ var fabriktablesElement = new Class({
 		var img = document.id(newid).getParent().getElement('img');
 		img.id = newid + '_loader';
 
-		this.el = newid;
+		this.el = document.id(newid);
 		this.elements = [];
 		this.elementLists = $H({});
 		this.waitingElements = $H({});
