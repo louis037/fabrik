@@ -24,12 +24,6 @@ var fabriktablesElement = new Class({
 	initialize : function (el, options) {
 		this.el = document.id(el);
 		this.setOptions(options);
-		// Fix up Joomla subform connection ids
-		if (this.options.conn.indexOf('X__') !== -1 && this.options.conn.slice(-2) === '-0') {
-			var cid = this.options.conn.split('-');
-			cid.pop();
-			this.options.conn = cid.join('-');
-		}
 		this.elements = [];
 		this.elementLists = $H({}); // keyed on specific element options
 		this.waitingElements = $H({}); // keyed on specific element options
