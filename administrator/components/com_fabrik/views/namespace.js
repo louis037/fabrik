@@ -69,6 +69,12 @@ if (typeof(jQuery) !== 'undefined') {
 			return;
 		}
 		var idx = group.slice(base.length);
+		var chgEvent = new Event('change');
+		row.getElements('select').each(function (i) {
+			// Reset all select dropdowns to default for cloned item.
+			i.set('value', i.getElement('option').get('value'));
+			i.dispatchEvent(chgEvent);
+		});
 		row.getElements('input, select, textarea').each(function (i) {
 			if (i.id) {
 				var newId = i.id;
