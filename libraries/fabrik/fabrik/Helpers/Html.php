@@ -1018,6 +1018,8 @@ EOD;
 				JHTML::_('behavior.calendar');
 			}
 
+			self::script(array('Fabrik'=> $mediaFolder . '/fabrik'), "\tFabrik.debug=" . (self::isDebug() ? "true;" : "false;"), '-min.js');
+
 			$liveSiteReq['Chosen'] = $mediaFolder . '/chosen-loader';
 			$liveSiteReq['Fabrik'] = $mediaFolder . '/fabrik';
 
@@ -1065,7 +1067,6 @@ EOD;
 
 				$liveSiteSrc[] = "\tFabrik.liveSite = '" . COM_FABRIK_LIVESITE . "';";
 				$liveSiteSrc[] = "\tFabrik.package = '" . $app->getUserState('com_fabrik.package', 'fabrik') . "';";
-				$liveSiteSrc[] = "\tFabrik.debug = " . (self::isDebug() ? 'true;' : 'false;');
 
 				// need to put jLayouts in session data, and add it in the system plugin buildjs(), so just add %%jLayouts%% placeholder
 				//$liveSiteSrc[] = "\tFabrik.jLayouts = " . json_encode(ArrayHelper::toObject(self::$jLayoutsJs)) . ";";
@@ -3221,6 +3222,6 @@ EOT;
 			}
 		}
 
-		return 'jform_' . $other;
+		return $other;
 	}
 }
