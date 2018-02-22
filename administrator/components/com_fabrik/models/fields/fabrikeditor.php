@@ -100,7 +100,7 @@ class JFormFieldFabrikeditor extends JFormFieldTextArea
 
 		$src = array(
 			'Ace' => 'media/com_fabrik/js/lib/ace/src-min-noconflict/ace.js',
-			'Fabrik' => 'media/com_fabrik/js/fabrik.js');
+			'Fabrik' => 'media/com_fabrik/js/fabrik.js',
 			'FbEditorModule' => 'administrator/components/com_fabrik/models/fields/fabrikeditor.js',
 		);
 		FabrikHelperHTML::script($src, $script);
