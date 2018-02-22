@@ -130,7 +130,6 @@ define(['jquery', 'fab/fabrik', 'admin/namespace', "lib/ace/src-min-noconflict/a
 		// Called from repeatgroup add and from namespace to handle Joomla subform cloning
 		cloned: function (newid, counter) {
 			this.initializeAce(newid, this.options);
-fconsole("FabrikEditor cloned:", newid, counter);
 		},
 
 	});
