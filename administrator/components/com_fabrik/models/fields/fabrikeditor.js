@@ -9,9 +9,7 @@
 /*global Fabrik:true, fconsole:true, Joomla:true, CloneObject:true, $H:true,unescape:true,Asset:true */
 
 define(['jquery', 'fab/fabrik', 'admin/namespace', "lib/ace/src-min-noconflict/ace"], function (jQuery) {
-	if (typeOf(FabrikAdmin.model.fields.fabrikeditor) === 'null') {
-		FabrikAdmin.model.fields.fabrikeditor = {};
-	}
+	FabrikAdmin.model.fields.fabrikeditor = FabrikAdmin.model.fields.fabrikeditor || {};
 
 	fabrikeditorElement = new Class ({
 		Implements: [Options, Events],
