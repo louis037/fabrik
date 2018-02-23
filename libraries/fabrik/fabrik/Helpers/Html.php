@@ -3160,7 +3160,7 @@ EOT;
 		if ($otherRpt) {
 
 			// In Fabrik repeatgroup - Joomla subform-repeatable does its own counting (see below)
-			if ($idCount != '')
+			if ($idCount !== '')
 			{
 				$other = $other . '-' . $idCount;
 			}
