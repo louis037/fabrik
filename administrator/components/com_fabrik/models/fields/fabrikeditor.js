@@ -32,9 +32,12 @@ define(["fab/fabrik", "admin/namespace", "lib/ace/src-min-noconflict/ace"], func
 			} else {
 				if (id.includes('X__')) {
 					// Likely to be because the element this has been called on is the hidden Joomla subform template (which is sneakily stored in a script node).
-					var subformScript = document.querySelector('script.subform-repeatable-template-section');
-					if (subformScript !== null && (subformScript.text || subformScript.textContent).includes(id)) {
-						return;
+					// This is, however, removed if plugin is loaded by ajax so we cannot test for it.
+					var p = id.split('__');
+					for (var i = p.length - 1; i > 0; i--) {
+						if (p[i].slice(-1) === 'X' && p[i-1] === p[i].slice(0, -1)) {
+							return;
+						}
 					}
 				}
 				fconsole('fabrikeditor: unable to find element to initialise:',id);
