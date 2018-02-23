@@ -1330,6 +1330,8 @@ EOD;
 			$r->admin       = 'administrator/components/com_fabrik/views';
 			$r->adminfields = 'administrator/components/com_fabrik/models/fields';
 
+			$r->jui         = 'media/jui/js';
+			$r->system      = 'media/system/js';
 			$r->jQueryUI   = 'media/com_fabrik/js/lib/jquery-ui/jquery-ui';
 			$r->chosen     = 'media/jui/js/chosen.jquery.min';
 			$r->ajaxChosen = 'media/jui/js/ajax-chosen.min';
