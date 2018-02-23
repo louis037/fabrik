@@ -96,12 +96,12 @@ class JFormFieldFabrikeditor extends JFormFieldTextArea
 		FabrikHelperHTML::framework();
 		FabrikHelperHTML::iniRequireJS();
 
-		$script = "FabrikAdmin.model.fields.fabrikeditor['$this->id'] = new fabrikeditorElement('$this->id', $opts);";
+		$script = "FabrikAdmin.model.fields.fabrikeditor['$this->id'] = new FabrikEditorElement('$this->id', $opts);";
 
 		$src = array(
-			'Ace' => 'media/com_fabrik/js/lib/ace/src-min-noconflict/ace.js',
 			'Fabrik' => 'media/com_fabrik/js/fabrik.js',
-			'FbEditorModule' => 'administrator/components/com_fabrik/models/fields/fabrikeditor.js',
+			'FabrikEditorElement' => 'administrator/components/com_fabrik/models/fields/fabrikeditor.js',
+			'Ace' => 'media/com_fabrik/js/lib/ace/src-min-noconflict/ace.js',
 		);
 		FabrikHelperHTML::script($src, $script);
 

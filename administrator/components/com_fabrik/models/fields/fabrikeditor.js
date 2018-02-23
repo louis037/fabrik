@@ -8,10 +8,12 @@
 /*jshint mootools: true */
 /*global Fabrik:true, fconsole:true, Joomla:true, CloneObject:true, $H:true,unescape:true,Asset:true */
 
-define(['jquery', 'fab/fabrik', 'admin/namespace', "lib/ace/src-min-noconflict/ace"], function (jQuery) {
+"use strict";
+
+define(["fab/fabrik", "admin/namespace", "lib/ace/src-min-noconflict/ace"], function (Fabrik, FabrikAdmin) {
 	FabrikAdmin.model.fields.fabrikeditor = FabrikAdmin.model.fields.fabrikeditor || {};
 
-	fabrikeditorElement = new Class ({
+	var FabrikEditorElement = new Class ({
 		Implements: [Options, Events],
 
 		options: {
@@ -122,13 +124,22 @@ define(['jquery', 'fab/fabrik', 'admin/namespace', "lib/ace/src-min-noconflict/a
 			}.bind(this));
 			FbEditor.getSession().on("change", this.updateHeight);
 
+			if (Fabrik.debug) {
+				fconsole('fabrikeditor: initialised', aceId);
+			}
 			return;
 		},
 
 		// Called from repeatgroup add and from namespace to handle Joomla subform cloning
 		cloned: function (newid, counter) {
+			if (Fabrik.debug) {
+				fconsole('fabrikeditor: cloned', newid);
+			}
 			this.initializeAce(newid, this.options);
 		},
 
 	});
+
+	window.FabrikEditorElement = FabrikEditorElement;
+	return FabrikEditorElement;
 });
