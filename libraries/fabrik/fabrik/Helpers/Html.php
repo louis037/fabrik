@@ -1564,7 +1564,7 @@ EOD;
 
 		if (is_array($onLoad))
 		{
-			$onLoad = implode("\n", $onLoad);
+			$onLoad = implode("\n\t", $onLoad);
 		}
 
 		$ext   = self::isDebug() ? '.js' : $minSuffix;
@@ -1653,7 +1653,7 @@ EOD;
 
 		$files     = "['" . implode("', '", $files) . "']";
 		$require[] = 'requirejs(' . ($files) . ', function (' . implode(", ", $names) . ') {';
-		$require[] = $onLoad;
+		$require[] = "\t" . $onLoad;
 		$require[] = '});';
 		$require[] = "\n";
 		$require   = implode("\n", $require);
