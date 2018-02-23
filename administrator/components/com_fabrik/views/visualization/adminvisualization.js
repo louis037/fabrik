@@ -42,7 +42,7 @@ define(['jquery', 'admin/pluginmanager'], function (jQuery, PluginManager) {
 				url: 'index.php',
 				'evalResponse': false,
 				'evalScripts' : function (script, text) {
-					this.script = script;
+					this.script = script.replace(/(<div[^>]*>.*<\/div>)/gi, '');
 				}.bind(this),
 				'data': {
 					'option': 'com_fabrik',
