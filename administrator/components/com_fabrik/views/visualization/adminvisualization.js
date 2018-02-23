@@ -42,7 +42,10 @@ define(['jquery', 'admin/pluginmanager'], function (jQuery, PluginManager) {
 				url: 'index.php',
 				'evalResponse': false,
 				'evalScripts' : function (script, text) {
-					this.script = script.replace(/\s*<div[^>]*>(.|\r|\n)*<\/div>\s*/gi, '');
+					// If Joomla subform-repeatable, we need to split out the template hidden as a script file
+					var regex = /\s*<div[^>]*>(.|\r|\n)*<\/div>\s*/gi;
+					this.templt = regex.exec(script);
+					this.script = script.replace(regex, '');
 				}.bind(this),
 				'data': {
 					'option': 'com_fabrik',
@@ -53,6 +56,16 @@ define(['jquery', 'admin/pluginmanager'], function (jQuery, PluginManager) {
 				'update': document.id('plugin-container'),
 				'onComplete': function (r) {
 					document.id('plugin-container').set('html', r);
+					// If Joomla subform-repeatable, we need to add back in the template hidden as a script file
+					var subform = jQuery('div.subform-repeatable');
+					if (subform) {
+						if (this.templt !== '') {
+							var sEl = new Element('script', {type:"text/subform-repeatable-template-section", class:"subform-repeatable-template-section"});
+							sEl.appendText(this.templt);
+							document.querySelector('div.subform-repeatable').appendChild(sEl);
+						}
+						subform.subformRepeatable()
+					}
 					Browser.exec(this.script);
 					this.updateBootStrap();
 					FabrikAdmin.reTip();
