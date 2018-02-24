@@ -45,6 +45,9 @@ define(['jquery', 'admin/pluginmanager'], function (jQuery, PluginManager) {
 					// If Joomla subform-repeatable, we need to split out the template hidden as a script file
 					var regex = /\s*<div[^>]*>(.|\r|\n)*<\/div>\s*/gi;
 					this.templt = regex.exec(script);
+					if (Array.isArray(this.templt)) {
+						this.templt = this.templt.join('');
+					}
 					this.script = script.replace(regex, '');
 				}.bind(this),
 				'data': {
@@ -57,14 +60,16 @@ define(['jquery', 'admin/pluginmanager'], function (jQuery, PluginManager) {
 				'onComplete': function (r) {
 					document.id('plugin-container').set('html', r);
 					// If Joomla subform-repeatable, we need to add back in the template hidden as a script file
-					var subform = jQuery('div.subform-repeatable');
+					var subform = document.querySelector('div.subform-repeatable');
 					if (subform) {
-						if (this.templt !== '') {
-							var sEl = new Element('script', {type:"text/subform-repeatable-template-section", class:"subform-repeatable-template-section"});
-							sEl.appendText(this.templt);
-							document.querySelector('div.subform-repeatable').appendChild(sEl);
+						if (subform && typeof this.templt === 'string' && this.templt !== "") {
+							var sEl = document.createElement('script');
+							sEl.className = "subform-repeatable-template-section";
+							sEl.setAttribute('type', "text/subform-repeatable-template-section");
+							sEl.textContent(this.templt);
+							subform.appendChild(sEl);
 						}
-						subform.subformRepeatable()
+						jQuery('div.subform-repeatable').subformRepeatable();
 					}
 					Browser.exec(this.script);
 					this.updateBootStrap();
