@@ -420,7 +420,7 @@ class FabrikPlugin extends JPlugin
 
 			$class = $j3 ? 'form-horizontal ' : 'adminform ';
 			$class .= $type . 'Settings page-' . $this->_name;
-			$repeat = isset($fieldset->repeatcontrols) && $fieldset->repeatcontrols == 1;
+			$repeat = isset($fieldset->repeatcontrols) && $fieldset->repeatcontrols == true;
 
 			// Bind data for repeat groups
 			$repeatDataMax = 1;
