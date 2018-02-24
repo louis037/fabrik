@@ -66,7 +66,7 @@ define(['jquery', 'admin/pluginmanager'], function (jQuery, PluginManager) {
 							var sEl = document.createElement('script');
 							sEl.className = "subform-repeatable-template-section";
 							sEl.setAttribute('type', "text/subform-repeatable-template-section");
-							sEl.textContent(this.templt);
+							sEl.textContent = this.templt;
 							subform.appendChild(sEl);
 						}
 						jQuery('div.subform-repeatable').subformRepeatable();
