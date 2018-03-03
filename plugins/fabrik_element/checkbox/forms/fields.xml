@@ -8,7 +8,7 @@
 
 			<field name="sub_options"
 				type="suboptions"
-				label="COM_FABRIK_SUBOPTIONS"/>
+				label="PLG_ELEMENT_CHECKBOX_SUBOPTIONS"/>
 
 			<field name="ck_options_per_row"
 				class="input-mini"
