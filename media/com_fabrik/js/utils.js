@@ -18,7 +18,7 @@ function fconsole() {
 				} else if (current instanceof Array) {
 					output.push(current.slice(0));
 				} else {
-					output.push(Object.assign({},current));
+					output.push(fDeepClone(current));
 				}
 				current = arg;
 			} else if (typeof arg === 'object') {
@@ -51,6 +51,29 @@ function fconsole() {
 			}
 			console.groupEnd();
 		}
+	}
+}
+
+function fDeepClone(obj) {
+	try {
+		if (obj == null || typeof obj != "object") return obj;
+		if (obj.constructor != Object && obj.constructor != Array) return obj;
+		if (obj.constructor == Date || obj.constructor == RegExp || obj.constructor == Function ||
+			obj.constructor == String || obj.constructor == Number || obj.constructor == Boolean)
+			return new obj.constructor(obj);
+
+		var result = new obj.constructor();
+
+		for (var name in obj)
+		{
+			result[name] = fDeepClone(obj[name]);
+		}
+
+		return result;
+	}
+	catch(error) {
+		console.warn('Unable to deepclone:', obj);
+		return obj;
 	}
 }
 
