@@ -3,6 +3,11 @@
 
 /**
  * Console.log wrapper
+ *
+ * Enhanced by Sophist to:
+ *   Create grouped multi-line output, with objects on separate lines
+ *   Clone objects before logging so that display is object state at the time of logging not (standard console.log) current version at time of viewing.
+ *   Include a stack trace if Joomla Debug is set.
  */
 function fconsole() {
 	if (typeof (window.console) !== 'undefined') {
@@ -34,7 +39,7 @@ function fconsole() {
 			} else if (current instanceof Array) {
 				output.push(current.slice(0));
 			} else {
-				output.push(Object.assign({},current));
+				output.push(fDeepClone(current));
 			}
 		} else {
 			output.push(current);
@@ -56,23 +61,24 @@ function fconsole() {
 
 function fDeepClone(obj) {
 	try {
-		if (obj == null || typeof obj != "object") return obj;
-		if (obj.constructor != Object && obj.constructor != Array) return obj;
-		if (obj.constructor == Date || obj.constructor == RegExp || obj.constructor == Function ||
-			obj.constructor == String || obj.constructor == Number || obj.constructor == Boolean)
+		if (obj === null || typeof obj !== 'object') return obj;
+		if (obj.constructor === Date || obj.constructor == RegExp || obj.constructor == Function ||
+			obj.constructor === String || obj.constructor == Number || obj.constructor == Boolean)
 			return new obj.constructor(obj);
 
 		var result = new obj.constructor();
 
 		for (var name in obj)
 		{
-			result[name] = fDeepClone(obj[name]);
+			if (obj.hasOwnProperty(name)) {
+				result[name] = fDeepClone(obj[name]);
+			}
 		}
 
 		return result;
 	}
 	catch(error) {
-		console.warn('Unable to deepclone:', obj);
+		console.warn('Fabrik utils: Deepclone failed:', error, obj);
 		return obj;
 	}
 }
