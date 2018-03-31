@@ -59,7 +59,13 @@ function fconsole() {
 	}
 }
 
-function fDeepClone(obj) {
+function fdebug() {
+	if (typeof Fabrik !== 'undefined' && Fabrik.debug) {
+		fconsole.apply(window, arguments);
+	}
+}
+
+function fDeepClone(obj, higher = []) {
 	try {
 		if (obj === null || typeof obj !== 'object') return obj;
 		if (obj.constructor === Date || obj.constructor == RegExp || obj.constructor == Function ||
@@ -67,18 +73,22 @@ function fDeepClone(obj) {
 			return new obj.constructor(obj);
 
 		var result = new obj.constructor();
+		higher.push(obj);
 
 		for (var name in obj)
 		{
 			if (obj.hasOwnProperty(name)) {
-				result[name] = fDeepClone(obj[name]);
+				if (higher.includes(obj[name])) {
+					result[name] = obj[name];
+				} else {
+					result[name] = fDeepClone(obj[name], higher);
+				}
 			}
 		}
 
 		return result;
 	}
 	catch(error) {
-		console.warn('Fabrik utils: Deepclone failed:', error, obj);
 		return obj;
 	}
 }
