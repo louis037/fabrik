@@ -1763,7 +1763,7 @@ class Worker
 	 */
 	public static function getDbo($loadJoomlaDb = false, $cnnId = null)
 	{
-		$sig = (int) $loadJoomlaDb . '.' . $cnnId;
+		$sig = $loadJoomlaDb ? -1 : (int) $cnnId;
 
 		if (!self::$database)
 		{
@@ -1796,13 +1796,19 @@ class Worker
 			$dbPrefix = $conf->get('dbprefix');
 			$driver   = $conf->get('dbtype');
 
-			// Test for swapping db table names
+			// Use own sub-class for JDatabaseDriver / JDatabase Query
+			// Sophist - should we be adding this suffix if driver is not mysqli because we only subclass mysqli at present?
+			// Sophist - should we be adding this suffix if this is a loadJoomlaDb i.e. we want joomla's/fabrik's own tables?
+			// if (!$loadJoomlaDb && driver == 'mysqli') {
 			$driver .= '_fab';
+			// }
 			$options = array('driver' => $driver, 'host' => $host, 'user' => $user, 'password' => $password, 'database' => $database,
 				'prefix' => $dbPrefix);
 
 			$version              = new JVersion;
 			self::$database[$sig] = $version->RELEASE > 2.5 ? JDatabaseDriver::getInstance($options) : JDatabase::getInstance($options);
+
+			self::$database[$sig]->setDebug(JDEBUG);
 
 			Worker::bigSelects(self::$database[$sig]);
 
@@ -2399,7 +2405,7 @@ class Worker
 			{
 				if (!array_key_exists($listId, $listIds))
 				{
-					$db         = JFactory::getDbo();
+					$db         = FabrikWorker::getDbo(true);
 					$myLanguage = JFactory::getLanguage();
 					$myTag      = $myLanguage->getTag();
 					$qLanguage  = !empty($myTag) ? ' AND ' . $db->q($myTag) . ' = ' . $db->qn('m.language') : '';
