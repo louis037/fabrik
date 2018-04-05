@@ -241,10 +241,13 @@ class FabrikPlugin extends JPlugin
 			}
 
 			$tab        = new stdClass;
-			$tab->href  = 'tab-' . $fieldset->name . '-' . $repeatCounter;
+			if ($repeatCounter != '') {
+				$tab->href  = 'tab-' . $fieldset->name . '-' . $repeatCounter;
+			}
 			$tab->id    = 'tab-' . $fieldset->name;
 			$tab->class = $i === 0 ? 'active' : '';
 			$tab->label = $fieldset->label;
+			$tab->description = $fieldset->description;
 			$tabs[]     = $tab;
 			$i++;
 		}
@@ -409,13 +412,18 @@ class FabrikPlugin extends JPlugin
 			$mode = null;
 		}
 
+		if ($repeatCounter != '')
+		{
+			$repeatCounter = '-' . $repeatCounter;
+		}
+
 		// Filer the forms fieldsets for those starting with the correct $searchName prefix
 		foreach ($fieldsets as $fieldset)
 		{
 			if ($mode === 'nav-tabs')
 			{
 				$tabClass = $c === 0 ? ' active' : '';
-				$str[]    = '<div role="tabpanel" class="tab-pane' . $tabClass . '" id="tab-' . $fieldset->name . '-' . $repeatCounter . '">';
+				$str[]    = '<div role="tabpanel" class="tab-pane' . $tabClass . '" id="tab-' . $fieldset->name . $repeatCounter . '">';
 			}
 
 			$class = $j3 ? 'form-horizontal ' : 'adminform ';
@@ -459,8 +467,8 @@ class FabrikPlugin extends JPlugin
 			{
 				if ($j3)
 				{
-					$str[] = '<a class="btn" href="#" data-button="addButton">' . FabrikHelperHTML::icon('icon-plus', FText::_('COM_FABRIK_ADD')) . '</a>';
-					$str[] = '<a class="btn" href="#" data-button="deleteButton">' . FabrikHelperHTML::icon('icon-minus', FText::_('COM_FABRIK_REMOVE')) . '</a>';
+					$str[] = '<a class="btn btn-success" href="#" data-button="addButton">' . FabrikHelperHTML::icon('icon-plus', FText::_('COM_FABRIK_ADD')) . '</a>';
+					$str[] = '<a class="btn btn-danger" href="#" data-button="deleteButton">' . FabrikHelperHTML::icon('icon-minus', FText::_('COM_FABRIK_REMOVE')) . '</a>';
 				}
 				else
 				{
