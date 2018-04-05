@@ -37,6 +37,10 @@ c. If you have also written fixes or enhancements of your own that are not being
 please feel free to raise a PR here and Sophist will merge it if he is happy with the code so that you won't lose
 your changes if you need to "update from Github".
 
+d. Although these fixes work on Sophist's own sites, Fabrikar do not share the details of their more comprehensive test environment,
+and these have not been tested or reviewed against this common test environment nor reviewed by Fabrikar code experts.
+So please test these carefully before applying these changes to your own production sites. 
+
 Installation
 ================
 
