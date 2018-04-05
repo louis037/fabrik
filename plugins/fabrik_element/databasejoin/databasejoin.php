@@ -3098,7 +3098,7 @@ class PlgFabrik_ElementDatabasejoin extends PlgFabrik_ElementList
 			}
 
 			// remove any placeholders we don't want
-			$obs = array_diff($obs, array('thistable'));
+			$obs = array_diff($obs, array('thistable', $opts->fullName));
 		}
 
 		$opts->observe = array_values($obs);
