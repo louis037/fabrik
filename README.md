@@ -1,4 +1,40 @@
-Fabrik is the Joomla application builder
+Fabrik is the Joomla application builder.
+
+This is Sophist's fork of the main Fabrikar repo for Fabrik. 
+This fork contains numerous enhancements and fixes that have been developed by Sophist
+but which Fabrikar have not got the resources to merge into their codebase.
+
+As a consequence Sophist is now maintaining a merged version of his fixes and enhancements and those from Fabrikar
+for use in his own projects. 
+However rather than keep these to himself he is also making these available for other Fabrik users to use
+if they so wish.
+
+The detailed list of fixes and enhancements in this version of Fabrik can be found in Sophist's Wiki page here.
+But the major ones are as follows:
+
+1. Syntax error checking for PHP and Javascript code in Fabrik back end
+2. Calc element can be SQL INT or DECIMAL or VARCHAR not just TEXT - which means you can index on it etc.
+3. Enhancements to several validation plugins
+4. Form modules can be forced to single column (useful if you want a module in a narrow side-bar.
+5. In a list you can have a Group title displayed over the top of the headers for the groups columns.
+6. Several improvements to error messages when your development creates a 500 error.
+7. Significant improvements to Repeat Groups inc. making zero rows work and allowing you to specify a dynamic max no. of rows
+8. Enhancements to back-end Elements list for sorting and drag and drop sequencing.
+9. Performance improvements avoiding unnecessary database calls for read-only dbjoin elements.
+10. Fix to databasejoin which resulted in incorrect database field type.
+
+**Please note the following caveats** if you decide to "update from github" using this fork to take advantage of the above:
+
+a. The code here is updated to include changes to Fabrikar's code base on a regular basis
+but is not guaranteed to include the latest changes. 
+If you need it brought up to date, please contact Sophist.
+
+b. If you want fixes for code that is different from that in the main Fabrik code base, Sophist will do his best to fix things.
+If it is an issue with the Fabrik code base, then you should ask for support as usual in the Fabrikar forums.
+
+c. If you have fixes or enhancements of your own that are not being merged by Farikar into the main code base,
+please feel free to raise a PR here and Sophist will merge it if he is happy with the code so that you won't lose
+your changes if you need to "update from Github".
 
 Installation
 ================
