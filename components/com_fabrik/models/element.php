@@ -6701,7 +6701,7 @@ class PlgFabrik_Element extends FabrikPlugin
 
 		$format = $params->get('text_format');
 
-		if ($format == 'integer' || $format == 'decimal')
+		if ($format == 'integer' || $format == 'decimal' || $format == 'number')
 		{
 			return false;
 		}
