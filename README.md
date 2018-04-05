@@ -1,4 +1,4 @@
-Fabrik is the Joomla application builder.
+**Fabrik is the Joomla application builder.**
 
 This is Sophist's fork of the main Fabrikar repo for Fabrik. 
 This fork contains numerous enhancements and fixes that have been developed by Sophist
