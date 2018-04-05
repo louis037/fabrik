@@ -11,15 +11,17 @@ Rather than keep these to himself he is also making these available for other Fa
 The detailed list of fixes and enhancements in this version of Fabrik can be found in [Sophist's Wiki page](https://github.com/Sophist-UK/joomla_fabrik/wiki). However the major ones are as follows:
 
 1. Syntax error checking for PHP and Javascript code in Fabrik back end
-2. Calc element can be SQL INT or DECIMAL or VARCHAR not just TEXT - which means you can index on it etc.
-3. Enhancements to several validation plugins
-4. Form modules can be forced to single column (useful if you want a module in a narrow side-bar.
-5. In a list you can have a Group title displayed over the top of the headers for the groups columns.
-6. Several improvements to error messages when your development creates a 500 error.
-7. Significant improvements to Repeat Groups inc. making zero rows work and allowing you to specify a dynamic max no. of rows
-8. Enhancements to back-end Elements list for sorting and drag and drop sequencing.
-9. Performance improvements avoiding unnecessary database calls for read-only dbjoin elements.
-10. Fix to databasejoin which resulted in incorrect database field type.
+1. Calc element can be SQL INT or DECIMAL or VARCHAR not just TEXT - which means you can index on it etc.
+1. Enhancements to several validation plugins
+1. Form modules can be forced to single column (useful if you want a module in a narrow side-bar.
+1. In a list you can have a Group title displayed over the top of the headers for the groups columns.
+1. Several improvements to error messages when your development creates a 500 error.
+1. Significant improvements to Repeat Groups inc. making zero rows work and allowing you to specify a dynamic max no. of rows
+1. Enhancements to back-end Elements list for sorting and drag and drop sequencing.
+1. Performance improvements avoiding unnecessary database calls for read-only dbjoin elements.
+1. Fix to databasejoin which resulted in incorrect database field type.
+1. Replacement for back end ajax RequestQueue - allows ajax requests to run in public, 
+and caches responses and avoids identical requests running in parallel.
 
 **Please note the following caveats** if you decide to "update from github" using this fork to take advantage of the above:
 
