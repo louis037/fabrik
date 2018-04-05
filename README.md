@@ -6,11 +6,9 @@ but which Fabrikar have not got the resources to merge into their codebase.
 
 As a consequence Sophist is now maintaining a merged version of his fixes and enhancements and those from Fabrikar
 for use in his own projects. 
-However rather than keep these to himself he is also making these available for other Fabrik users to use
-if they so wish.
+Rather than keep these to himself he is also making these available for other Fabrik users to use if they so wish.
 
-The detailed list of fixes and enhancements in this version of Fabrik can be found in Sophist's Wiki page here.
-But the major ones are as follows:
+The detailed list of fixes and enhancements in this version of Fabrik can be found in [Sophist's Wiki page](https://github.com/Sophist-UK/joomla_fabrik/wiki). However the major ones are as follows:
 
 1. Syntax error checking for PHP and Javascript code in Fabrik back end
 2. Calc element can be SQL INT or DECIMAL or VARCHAR not just TEXT - which means you can index on it etc.
@@ -29,17 +27,16 @@ a. The code here is updated to include changes to Fabrikar's code base on a regu
 but is not guaranteed to include the latest changes. 
 If you need it brought up to date, please contact Sophist.
 
-b. If you want fixes for code that is different from that in the main Fabrik code base, Sophist will do his best to fix things.
+b. If you want fixes for code in this fork that is different from that in the main Fabrik code base, 
+Sophist will do his best to fix things.
 If it is an issue with the Fabrik code base, then you should ask for support as usual in the Fabrikar forums.
 
-c. If you have fixes or enhancements of your own that are not being merged by Farikar into the main code base,
+c. If you have also written fixes or enhancements of your own that are not being merged by Farikar into the main code base,
 please feel free to raise a PR here and Sophist will merge it if he is happy with the code so that you won't lose
 your changes if you need to "update from Github".
 
 Installation
 ================
-
-[![Join the chat at https://gitter.im/Fabrik/fabrik](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/Fabrik/fabrik?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 - Check out the files into your Joomla installations root directory
 - Log into your Joomla administration control panel
@@ -51,8 +48,8 @@ Installation
 
 Enabling Plugins
 ================
-
-Fabrik ships with several of the most common element and validation plugins, however to reduce installation package size not all available plugins are pre-installed.
+Fabrik ships with several of the most common element and validation plugins, 
+however to reduce installation package size not all available plugins are pre-installed.
 
 All other element and validation plugins can be found by following these steps:
 
@@ -69,19 +66,18 @@ The element or validation plugin will then appear as an option when creating an 
 
 Updating
 ================
+Once you have installed Fabrik 3.x, if you want to stay up to date with the latest code updates 
+between official releases, you can 'update from GitHub'.
 
-Once you have installed Fabrik 3.x, if you want to stay up to date with the latest code updates between official releases, you can 'update from GitHub'.
-
-Please see here for instructions on how to update from GitHub - [http://fabrikar.com/forums/index.php?wiki/update-from-github/](http://fabrikar.com/forums/index.php?wiki/update-from-github/).
+Please see here for instructions on how to update from GitHub - 
+[http://fabrikar.com/forums/index.php?wiki/update-from-github/](http://fabrikar.com/forums/index.php?wiki/update-from-github/).
 
 Upgrading
 ================
-
 At the time of an official release, please follow the steps here - [http://fabrikar.com/forums/index.php?wiki/upgrade-instructions/](http://fabrikar.com/forums/index.php?wiki/upgrade-instructions/)
 
 Building
 ========
-
 We have a Grunt build file which will create the Fabrik package for you, and place it in a folder /fabrik_build
 The build relies on node-gpy, which depending on your operating system may require additional installations beyond node itself.
 Please follow the instructions @ https://github.com/nodejs/node-gyp
