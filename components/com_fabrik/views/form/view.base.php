@@ -802,24 +802,27 @@ class FabrikViewFormBase extends FabrikView
 		$minRepeat      = array();
 		$showMaxRepeats = array();
 		$minMaxErrMsg   = array();
-		$numRepeatEls   = array();
+		$repeatEls   = array();
 
 		foreach ($this->groups as $g)
 		{
 			$hidden[$g->id]         = $g->startHidden;
-			$maxRepeat[$g->id]      = $g->maxRepeat;
 			$minRepeat[$g->id]      = $g->minRepeat;
-			$numRepeatEls[$g->id]   = FabrikString::safeColNameToArrayKey($g->numRepeatElement);
+			$maxRepeat[$g->id]      = $g->maxRepeat;
+			$minRepeatEl            = FabrikString::safeColNameToArrayKey($g->minRepeatElement);
+			$maxRepeatEl            = FabrikString::safeColNameToArrayKey($g->maxRepeatElement);
+			$repeatEls[$g->id]   	  = array($minRepeatEl, $maxRepeatEl);
+			$showMaxRepeats[$g->id] = $g->showMaxRepeats;
 			$showMaxRepeats[$g->id] = $g->showMaxRepeats;
 			$minMaxErrMsg[$g->id]   = $g->minMaxErrMsg;
 		}
 
 		$opts->hiddenGroup    = $hidden;
-		$opts->maxRepeat      = $maxRepeat;
 		$opts->minRepeat      = $minRepeat;
+		$opts->maxRepeat      = $maxRepeat;
+		$opts->repeatEls      = $repeatEls;
 		$opts->showMaxRepeats = $showMaxRepeats;
 		$opts->minMaxErrMsg   = $minMaxErrMsg;
-		$opts->numRepeatEls   = $numRepeatEls;
 
 		// $$$ hugh adding these so calc element can easily find joined and repeated join groups
 		// when it needs to add observe events ... don't ask ... LOL!
@@ -832,6 +835,9 @@ class FabrikViewFormBase extends FabrikView
 		{
 			if ($groupModel->getGroup()->is_join)
 			{
+				JText::script('COM_FABRIK_ADD_GROUP');
+				JText::script('COM_FABRIK_DELETE_GROUP');
+
 				$joinParams = $groupModel->getJoinModel()->getJoin()->params;
 
 				if (!(is_a($joinParams, 'Registry') || is_a($joinParams, 'JRegistry')))

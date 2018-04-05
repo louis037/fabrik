@@ -61,16 +61,13 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
             this.duplicatedGroups = $H({});
             this.addingOrDeletingGroup = false;
             this.addedGroups = [];
-	        this.watchRepeatNumsDone = false;
+            this.watchRepeatNumsDone = false;
             this.fx = {};
             this.fx.elements = [];
             this.fx.hidden = [];
             this.fx.validations = {};
             this.setUpAll();
             this._setMozBoxWidths();
-            (function () {
-                this.duplicateGroupsToMin();
-            }.bind(this)).delay(1000);
 
             // Delegated element events
             this.events = {};
@@ -107,13 +104,13 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
         setUpAll: function () {
             this.setUp();
 
-	        // add a wrapper if we're going to be using the tooltip, as can't do tooltip on disabled elements
-	        if (this.options.ajaxValidation && this.options.toggleSubmit && this.options.toggleSubmitTip !== '') {
-		        var submit = this._getButton('Submit');
-		        if (typeOf(submit) !== 'null') {
-			        jQuery(submit).wrap('<div data-toggle="tooltip" title="you must validate" class="fabrikSubmitWrapper" style="display: inline-block"></div>div>');
-		        }
-	        }
+            // add a wrapper if we're going to be using the tooltip, as can't do tooltip on disabled elements
+            if (this.options.ajaxValidation && this.options.toggleSubmit && this.options.toggleSubmitTip !== '') {
+                var submit = this._getButton('Submit');
+                if (typeOf(submit) !== 'null') {
+                    jQuery(submit).wrap('<div data-toggle="tooltip" title="you must validate" class="fabrikSubmitWrapper" style="display: inline-block"></div>div>');
+                }
+            }
 
             this.winScroller = new Fx.Scroll(window);
             if (this.form) {
@@ -150,7 +147,6 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
                 this.watchGoBackButton();
             }
 
-
             this.watchPrintButton();
             this.watchPdfButton();
             this.watchTabs();
@@ -158,24 +154,38 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
         },
 
         watchRepeatNums: function () {
-	        Fabrik.addEvent('fabrik.form.elements.added', function (form) {
-	            if (form.id === this.id && !this.watchRepeatNumsDone) {
-		            Object.each(this.options.numRepeatEls, function (name, key) {
-			            if (name !== '') {
-				            var el = this.formElements.get(name);
-				            if (el) {
+            Fabrik.addEvent('fabrik.form.elements.added', function (form) {
+                if (form.id === this.id && !this.watchRepeatNumsDone) {
+                    Object.each(this.options.repeatEls, function (elNames, groupId) {
+                        minName = elNames[0];
+                        maxName = elNames[1];
+                        // Double changeevent call if same element
+                        // Can add code to do single changeevent if needed
+                        if (minName !== '') {
+                            var el = this.formElements.get(minName);
+                            if (el) {
                                 el.addNewEventAux(el.getChangeEvent(), function(event) {
-                                    var v = el.getValue();
-                                    this.options.minRepeat[key] = v.toInt();
-	                                this.options.maxRepeat[key] = v.toInt();
-	                                this.duplicateGroupsToMin();
-                                }.bind(this, el, key));
-				            }
-			            }
-		            }.bind(form));
-		            this.watchRepeatNumsDone = true;
-	            }
-	        }.bind(this));
+                                    this.options.minRepeat[groupId] = el.getValue().toInt();
+                                    this.duplicateGroupsToMin();
+                                }.bind(this, el, groupId));
+                                this.options.minRepeat[groupId] = el.getValue().toInt();
+                            }
+                        }
+                        if (maxName !== '') {
+                            var el = this.formElements.get(maxName);
+                            if (el) {
+                                el.addNewEventAux(el.getChangeEvent(), function(event) {
+                                    this.options.maxRepeat[groupId] = el.getValue().toInt();
+                                    this.duplicateGroupsToMin();
+                                }.bind(this, el, groupId));
+                                this.options.maxRepeat[groupId] = el.getValue().toInt();
+                            }
+                        }
+                    }.bind(form));
+                    this.watchRepeatNumsDone = true;
+                    this.duplicateGroupsToMin();
+                }
+            }.bind(this));
         },
 
         /**
@@ -192,10 +202,10 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
                     url = url.replace(/&rowid=\d+/, '&rowid=' + this.options.rowid);
                     if (this.options.lang !== false) {
                         if (url.test(/\?/)) {
-	                        url += '&lang=' + this.options.lang;
+                            url += '&lang=' + this.options.lang;
                         }
                         else {
-	                        url += '?lang=' + this.options.lang;
+                            url += '?lang=' + this.options.lang;
                         }
                     }
                     window.open(
@@ -217,12 +227,12 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
                 // @FIXME for SEF
                 var url = e.event.currentTarget.href.replace(/(rowid=\d*)/, 'rowid=' + this.options.rowid);
                 if (this.options.lang !== false) {
-	                if (url.test(/\?/)) {
-		                url += '&lang=' + this.options.lang;
-	                }
-	                else {
-		                url += '?lang=' + this.options.lang;
-	                }                }
+                    if (url.test(/\?/)) {
+                        url += '&lang=' + this.options.lang;
+                    }
+                    else {
+                        url += '?lang=' + this.options.lang;
+                    }                }
                 window.location = url;
             }.bind(this));
         },
@@ -310,7 +320,7 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
                 c = document.id(id);
 
                 if (!c) {
-                    fconsole('Fabrik form::addElementFX: Group "' + id + '" does not exist.');
+                    if (Fabrik.debug) fconsole('Fabrik form::addElementFX: Group "' + id + '" does not exist.');
                     return false;
                 }
             } else if (id.slice(0, 8) === 'element_') {
@@ -318,16 +328,16 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
                 k = 'element' + id;
                 c = document.id(id);
                 if (!c) {
-                    fconsole('Fabrik form::addElementFX: Element "' + id + '" does not exist.');
+                    if (Fabrik.debug) fconsole('Fabrik form::addElementFX: Element "' + id + '" does not exist.');
                     return false;
                 }
                 c = c.getParent('.fabrikElementContainer');
                 if (!c) {
-                    fconsole('Fabrik form::addElementFX: Element "' + id + '.fabrikElementContainer" does not exist.');
+                    if (Fabrik.debug) fconsole('Fabrik form::addElementFX: Element "' + id + '.fabrikElementContainer" does not exist.');
                     return false;
                 }
             } else {
-                fconsole('Fabrik form::addElementFX: Not an element or group: ' + id);
+                if (Fabrik.debug) fconsole('Fabrik form::addElementFX: Not an element or group: ' + id);
                 return false;
             }
             if (c) {
@@ -398,7 +408,6 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
                     id = bits.join('_');
                 }
             }
-
             // Create the fx key
             id = id.replace('fabrik_trigger_', '');
             if (id.slice(0, 6) === 'group_') {
@@ -459,10 +468,10 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
                         fx.css.element.show();
                         fx.css.start({'opacity': [0, 1]});
                     }
-	                if (groupfx) {
-		                this.showGroupTab(id);
+                    if (groupfx) {
+                        this.showGroupTab(id);
                         fxElement.show();
-	                }
+                    }
                     break;
                 case 'fadeout':
                     if (fx.css.lastMethod !== 'fadeout') {
@@ -471,9 +480,9 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
                             fxElement.addClass('fabrikHide');
                         });
                     }
-	                if (groupfx) {
-		                this.hideGroupTab(id);
-	                }
+                    if (groupfx) {
+                        this.hideGroupTab(id);
+                    }
                     break;
                 case 'slide in':
                     fx.slide.slideIn();
@@ -491,31 +500,41 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
                 case 'disable':
                     if (!groupfx) {
                         jQuery('#' + id).prop('disabled', true);
+                        if (jQuery('#' + id + '.chzn-done').prop('tagName') === 'SELECT') {
+                            jQuery('#' + id).trigger("liszt:updated");
+                            jQuery('#' + id).trigger("chosen:updated");
+                        }
                     }
                     break;
                 case 'enable':
                     if (!groupfx) {
                         jQuery('#' + id).prop('disabled', false);
+                        if (jQuery('#' + id + '.chzn-done').prop('tagName') === 'SELECT') {
+                            jQuery('#' + id).trigger("liszt:updated");
+                            jQuery('#' + id).trigger("chosen:updated");
+                        }
                     }
                     break;
                 case 'readonly':
                     if (!groupfx) {
+                        jQuery('#' + id).attr('readonly', true);
                         // can't "readonly" a select, so disable all but selected option instead
                         if (jQuery('#' + id).prop('tagName') === 'SELECT') {
                             jQuery('#' + id + ' option:not(:selected)').attr('disabled', true);
-                        }
-                        else {
-                            jQuery('#' + id).prop('readonly', true);
+                            // if select is rendered as chosen then trigger a chosen update
+                            jQuery('#' + id).trigger("liszt:updated");
+                            jQuery('#' + id).trigger("chosen:updated");
                         }
                     }
                     break;
                 case 'notreadonly':
                     if (!groupfx) {
+                        jQuery('#' + id).attr('readonly', false);
                         if (jQuery('#' + id).prop('tagName') === 'SELECT') {
                             jQuery('#' + id + ' option').attr('disabled', false);
-                        }
-                        else {
-                            jQuery('#' + id).prop('readonly', false);
+                            // if select is rendered as chosen then trigger a chosen update
+                            jQuery('#' + id).trigger("liszt:updated");
+                            jQuery('#' + id).trigger("chosen:updated");
                         }
                     }
                     break;
@@ -611,9 +630,9 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
          * button which resets the form and submits it using the removeSession task.
          */
         watchClearSession: function () {
-	        if (this.options.multipage_save === 0) {
-		        return;
-	        }
+            if (this.options.multipage_save === 0) {
+                return;
+            }
 
             var self = this,
                 form = jQuery(this.form);
@@ -885,7 +904,7 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
                 elements.each(function (el) {
                     if (typeOf(el) === 'array') {
                         if (typeOf(document.id(el[1])) === 'null') {
-                            fconsole('Fabrik form::addElements: Cannot add element "' + el[1] +
+                            if (Fabrik.debug) fconsole('Fabrik form::addElements: Cannot add element "' + el[1] +
                                 '" because it does not exist in HTML.');
                             return;
                         }
@@ -894,17 +913,17 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
                     }
                     else if (typeOf(el) === 'object') {
                         if (typeOf(document.id(el.options.element)) === 'null') {
-                            fconsole('Fabrik form::addElements: Cannot add element "' +
+                            if (Fabrik.debug) fconsole('Fabrik form::addElements: Cannot add element "' +
                                 el.options.element + '" because it does not exist in HTML.');
                             return;
                         }
                         added.push(this.addElement(el, el.options.element, gid));
                     }
                     else if (typeOf(el) !== 'null') {
-                        fconsole('Fabrik form::addElements: Cannot add unknown element: ' + el);
+                        if (Fabrik.debug) fconsole('Fabrik form::addElements: Cannot add unknown element: ' + el);
                     }
                     else {
-                        fconsole('Fabrik form::addElements: Cannot add null element.');
+                        if (Fabrik.debug) fconsole('Fabrik form::addElements: Cannot add null element.');
                     }
                 }.bind(this));
             }.bind(this));
@@ -916,7 +935,7 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
                     try {
                         added[i].attachedToForm();
                     } catch (err) {
-                        fconsole(added[i].options.element + ' attach to form:' + err);
+                        if (Fabrik.debug) fconsole('Fabrik form::addElements: Error attaching ' + added[i].options.element + ' to form:' + err);
                     }
                 }
             }
@@ -963,13 +982,13 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
                 });
             }
             if (!el) {
-                fconsole('Fabrik form::dispatchEvent: Cannot find element to add ' + action + ' event to: ' + elementId);
+                if (Fabrik.debug) fconsole('Fabrik form::dispatchEvent: Cannot find element to add ' + action + ' event to: ' + elementId);
             }
             else if (js !== '') {
                 el.addNewEvent(action, js);
             }
             else if (Fabrik.debug) {
-                fconsole('Fabrik form::dispatchEvent: Javascript empty for ' + action + ' event on: ' + elementId);
+                if (Fabrik.debug) fconsole('Fabrik form::dispatchEvent: Javascript empty for ' + action + ' event on: ' + elementId);
             }
         },
 
@@ -995,7 +1014,7 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
                 return;
             }
             if (el.length === 0) {
-                fconsole('Fabrik form::watchValidation: Could not add ' + triggerEvent + ' event because element "' +
+                if (Fabrik.debug) fconsole('Fabrik form::watchValidation: Could not add ' + triggerEvent + ' event because element "' +
                     id + '" does not exist.');
                 return;
             }
@@ -1423,7 +1442,7 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
                                 'contentType': false
                             })
                                 .fail(function (text, error) {
-                                    fconsole(text + ': ' + error);
+                                    fconsole('Fabrik form::doSubmit: Ajax failed: ' + text + ': ' + error);
                                     self.showMainError(error);
                                     Fabrik.loader.stop(self.getBlock(), 'Error in returned JSON');
                                     self.toggleSubmit(true);
@@ -1434,7 +1453,7 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
                                     if (typeOf(json) === 'null') {
                                         // Stop spinner
                                         Fabrik.loader.stop(self.getBlock(), 'Error in returned JSON');
-                                        fconsole('error in returned json', json, txt);
+                                        fconsole('Fabrik form::doSubmit: Error in returned ajax json: ', json, txt);
                                         return;
                                     }
                                     // Process errors if there are some
@@ -1535,14 +1554,14 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
                                 'data': data,
                                 'method': this.options.ajaxmethod,
                                 onError: function (text, error) {
-                                    fconsole(text + ': ' + error);
+                                    fconsole('Fabrik form::doSubmit: OnError ' + text + ': ' + error);
                                     this.showMainError(error);
                                     Fabrik.loader.stop(this.getBlock(), 'Error in returned JSON');
                                     this.toggleSubmit(true);
                                 }.bind(this),
 
                                 onFailure: function (xhr) {
-                                    fconsole(xhr);
+                                    fconsole('Fabrik form::doSubmit: OnFailure ' + text + ': ' + xhr);
                                     Fabrik.loader.stop(this.getBlock(), 'Ajax failure');
                                     this.toggleSubmit(true);
                                 }.bind(this),
@@ -1551,7 +1570,7 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
                                     if (typeOf(json) === 'null') {
                                         // Stop spinner
                                         Fabrik.loader.stop(this.getBlock(), 'Error in returned JSON');
-                                        fconsole('error in returned json', json, txt);
+                                        fconsole('Fabrik form::doSubmit: Error in returned json:', json, txt);
                                         return;
                                     }
                                     // Process errors if there are some
@@ -1782,7 +1801,7 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
                 }
             }));
 
-            this.form.addEvent('click:relay(.fabrikSubGroup)', function (e, subGroup) {
+/*            this.form.addEvent('click:relay(.fabrikSubGroup)', function (e, subGroup) {
                 var r = subGroup.getElement('.fabrikGroupRepeater');
                 if (r) {
                     subGroup.addEvent('mouseenter', function (e) {
@@ -1793,6 +1812,7 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
                     });
                 }
             }.bind(this));
+*/
         },
 
         /**
@@ -1802,11 +1822,11 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
          * @returns {boolean}
          */
         mockDuplicateGroup: function(groupId) {
-            var add_btn = this.form.getElement('#group' + groupId + ' .addGroup');
+            var addButton = this.form.getElement('#group' + groupId + ' .addGroup');
 
-            if (typeOf(add_btn) !== 'null') {
-                var add_e = new Event.Mock(add_btn, 'click');
-                this.duplicateGroup(add_e, false);
+            if (typeOf(addButton) !== 'null') {
+                var addEvent = new Event.Mock(addButton, 'click');
+                this.duplicateGroup(addEvent, false);
                 return true;
             }
 
@@ -1833,9 +1853,8 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
                 if (canRepeat.toInt() !== 1) {
                     return;
                 }
-
                 var repeat_counter = this.form.getElement('#fabrik_repeat_group_' + groupId + '_counter'),
-                    repeat_rows, repeat_real, add_btn, deleteButton, i, repeat_id_0, deleteEvent;
+                    repeat_rows, repeat_real, addButton, deleteButton, i, repeat_id_0, deleteEvent;
 
                 if (typeOf(repeat_counter) === 'null') {
                     return;
@@ -1843,11 +1862,16 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
 
                 repeat_rows = repeat_real = repeat_counter.value.toInt();
 
+                // Check if first and only row is a new row so we can reduce rows shown to zero
                 if (repeat_rows === 1) {
-                    repeat_id_0 = this.form.getElement('#' + this.options.group_pk_ids[groupId] + '_0');
+                    var repeat_id_0 = this.form.getElement('#' + this.options.group_pk_ids[groupId] + '_0');
+                    if (typeOf(repeat_id_0) !== 'null') {
+                        // Do not reduce rows shown to zero if there are validation errors
+                        var fabErrors = repeat_id_0.getElements('.fabrikError');
 
-                    if (typeOf(repeat_id_0) !== 'null' && repeat_id_0.value === '') {
-                        repeat_real = 0;
+                        if (typeOf(fabErrors) === 'null' && repeat_id_0.value === '') {
+                            repeat_real = 0;
+                        }
                     }
                 }
 
@@ -1864,42 +1888,38 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
                  * $$$ paul - fixing min of 0 for Jaanus
                  * http://fabrikar.com/forums/index.php?threads/couple-issues-with-protostar-template.35917/
                  **/
-                if (min === 0 && repeat_real === 0) {
-
+                if (repeat_rows < min) {
                     // Create mock event
-                    deleteButton = this.form.getElement('#group' + groupId + ' .deleteGroup');
-                    deleteEvent = typeOf(deleteButton) !== 'null' ? new Event.Mock(deleteButton, 'click') : false;
-                    subGroup = group.getElement('.fabrikSubGroup');
-                    // Remove only group
-                    this.deleteGroup(deleteEvent, group, subGroup);
-
-                }
-                else if (repeat_rows < min) {
-                    // Create mock event
-                    add_btn = this.form.getElement('#group' + groupId + ' .addGroup');
-                    if (typeOf(add_btn) !== 'null') {
-                        var add_e = new Event.Mock(add_btn, 'click');
+                    var addButton = this.form.getElement('#group' + groupId + ' .addGroup');
+                    if (typeOf(addButton) !== 'null') {
+                        var addEvent = new Event.Mock(addButton, 'click');
 
                         // Duplicate group
                         for (i = repeat_rows; i < min; i++) {
-                            this.duplicateGroup(add_e, false);
+                            this.duplicateGroup(addEvent, false);
                         }
                     }
                 }
-                else if (max > 0 && repeat_rows > max) {
-	                // Delete groups
-	                for (i = repeat_rows; i > max; i--) {
-		                var b = jQuery(this.form.getElements('#group' + groupId + ' .deleteGroup')).last()[0];
-		                var del_btn = jQuery(b).find('[data-role=fabrik_delete_group]')[0];
-		                subGroup = jQuery(group.getElements('.fabrikSubGroup')).last()[0];
-		                if (typeOf(del_btn) !== 'null') {
-		                    var del_e = new Event.Mock(del_btn, 'click');
-			                this.deleteGroup(del_e, group, subGroup);
-		                }
-	                }
+                else if (max > -1 && repeat_rows > max) {
+                    // Delete groups
+                    for (i = repeat_rows; i > max && i > 0; i--) {
+                        var subGroup = jQuery(group.getElements('.fabrikSubGroup')).last()[0];
+                        var b = jQuery(this.form.getElements('#group' + groupId + ' .deleteGroup')).last()[0];
+                        var deleteButton = jQuery(b).find('[data-role=fabrik_delete_group]')[0];
+                        var deleteEvent = typeOf(deleteButton) !== 'null' ? new Event.Mock(deleteButton, 'click') : false;
+                        this.deleteGroup(deleteEvent, group, subGroup);
+                    }
+                }
+                if (min === 0 && repeat_real === 0) {
+                    // Create mock event
+                    var subGroup = group.getElement('.fabrikSubGroup');
+                    var deleteButton = this.form.getElement('#group' + groupId + ' .deleteGroup');
+                    var deleteEvent = typeOf(deleteButton) !== 'null' ? new Event.Mock(deleteButton, 'click') : false;
+                    this.deleteGroup(deleteEvent, group, subGroup);
                 }
 
                 this.setRepeatGroupIntro(group, groupId);
+                this.setRepeatButtons(group, groupId);
             }.bind(this));
         },
 
@@ -1950,6 +1970,15 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
                 this.hideLastGroup(i, subGroup);
                 Fabrik.fireEvent('fabrik.form.group.delete.end', [this, e, i, delIndex]);
             } else {
+
+                // Run unload events on each element being deleted
+                subGroup.getElements('.fabrikinput').each(function (dom,i,els) {
+                    var object = Fabrik.getElementObject(els[i].id);
+                    if (object) {
+                        object.runUnloadEvents();
+                    }
+                });
+
                 var toel = subGroup.getPrevious();
                 /*
                 var myFx = new Fx.Tween(subGroup, {
@@ -2011,6 +2040,7 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
             // $$$ hugh - no, mustn't decrement this!  See comment in setupAll
             this.repeatGroupMarkers.set(i, this.repeatGroupMarkers.get(i) - 1);
             this.setRepeatGroupIntro(group, i);
+            this.setRepeatButtons(group, i);
         },
 
         hideLastGroup: function (groupId, subGroup) {
@@ -2047,19 +2077,15 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
             }
 
             var clone = null;
-            var found = false;
             if (this.duplicatedGroups.has(groupId)) {
-                found = true;
-            }
-            if (!found) {
-                clone = subgroup.cloneNode(true);
-                this.duplicatedGroups.set(groupId, clone);
-            } else {
                 if (!subgroup) {
                     clone = this.duplicatedGroups.get(groupId);
                 } else {
                     clone = subgroup.cloneNode(true);
                 }
+            } else {
+                clone = subgroup.cloneNode(true);
+                this.duplicatedGroups.set(groupId, clone);
             }
             return clone;
         },
@@ -2095,9 +2121,11 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
             var i = e.target.getParent('.fabrikGroup').id.replace('group', '');
             var group_id = i.toInt();
             var group = document.id('group' + i);
+            // Avoid tooltip being cloned - delete rather than hide to avoid need to wait for fx
+            group.getElements('.tooltip').each(function (el) { el.dispose(); });
             var c = this.repeatGroupMarkers.get(i);
             var repeats = document.id('fabrik_repeat_group_' + i + '_counter').get('value').toInt();
-            if (repeats >= this.options.maxRepeat[i] && this.options.maxRepeat[i] !== 0) {
+            if (repeats >= this.options.maxRepeat[i] && this.options.maxRepeat[i] !== -1) {
                 if (this.options.minMaxErrMsg[i] !== '') {
                     var errorMessage = this.options.minMaxErrMsg[i];
                     errorMessage = errorMessage.replace(/\{min\}/, this.options.minRepeat[i]);
@@ -2128,10 +2156,21 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
                 }
 
                 this.repeatGroupMarkers.set(i, this.repeatGroupMarkers.get(i) + 1);
+                this.setRepeatButtons(group, i);
                 return;
             }
 
             var clone = this.getSubGroupToClone(i);
+            var addButton = clone.getElement('.fabrikGroupRepeater.btn-group .addGroup i');
+            if (addButton) {
+                addButton.setProperty('title',Joomla.JText._('COM_FABRIK_ADD_GROUP'));
+            }
+            var delButton = clone.getElement('.fabrikGroupRepeater.btn-group .deleteGroup i');
+            if (delButton) {
+                delButton.setProperty('title',Joomla.JText._('COM_FABRIK_DELETE_GROUP'));
+            }
+            Fabrik.tips.attach(clone.getElements('.fabrikTip'));
+
             var tocheck = this.repeatGetChecked(group);
 
             // Check for table style group, which may or may not have a tbody in it
@@ -2220,13 +2259,10 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
                     // clone js element controller, set form to be passed by reference and
                     // not cloned
                     var ignore = el.unclonableProperties();
-                    var newEl = new CloneObject(el, true, ignore);
+                    var newEl = new CloneObject(el, true, []);
 
                     newEl.container = null;
                     newEl.options.repeatCounter = c;
-
-                    // This seems to be wrong, as it'll set origId to the repeat ID with the _X appended.
-                    //newEl.origId = origelid;
 
                     if (hasSubElements && typeOf(subElementContainer) !== 'null') {
                         newEl.element = document.id(subElementContainer);
@@ -2236,10 +2272,14 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
                     } else {
                         newEl.cloneUpdateIds(lastinput.id);
                     }
-                    //newEl.reset();
                     newElementControllers.push(newEl);
                 }
             }.bind(this));
+
+            // Sophist: we need to create html before running cloned and reset on elements
+            var o = {};
+            o[i] = newElementControllers;
+            this.addElements(o);
 
             newElementControllers.each(function (newEl) {
                 newEl.cloned(c);
@@ -2263,11 +2303,8 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
                     newEl.resetEvents();
                 }
             }.bind(this));
-            var o = {};
-            o[i] = newElementControllers;
-            this.addElements(o);
 
-	        /**
+            /**
              * Only scroll the window if the new element is not visible and 'scroll' arg true
              * (so for example, we won't scroll if called from duplicateGroupsToMin)
              */
@@ -2277,7 +2314,7 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
                     win_scroll = document.id(window).getScroll().y,
                     obj = clone.getCoordinates();
 
-	            /**
+                /**
                  * If the bottom of the new repeat goes below the bottom of the visible window,
                  * scroll up just enough to show it.
                  */
@@ -2298,6 +2335,31 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
             this.setRepeatGroupIntro(group, i);
             this.repeatGroupMarkers.set(i, this.repeatGroupMarkers.get(i) + 1);
             this.addedGroups.push('group' + i);
+            this.setRepeatButtons(group, i);
+        },
+
+        /**
+         * Enables/disables Repeat buttons depending on repeats vs. min / max
+         *
+         * @param   element  group  Group element
+         * @param   string   i      Group number
+         */
+        setRepeatButtons: function (group, i) {
+            var repeats = document.id('fabrik_repeat_group_' + i + '_counter').get('value').toInt();
+
+            if (repeats >= this.options.maxRepeat[i] && this.options.maxRepeat[i] !== -1) {
+                group.getElements('.addGroup.btn').addClass('disabled');
+            }
+            else {
+                group.getElements('.addGroup.btn').removeClass('disabled');
+            }
+
+            if (repeats <= this.options.minRepeat[i]) {
+                group.getElements('.deleteGroup.btn').addClass('disabled');
+            }
+            else {
+                group.getElements('.deleteGroup.btn').removeClass('disabled');
+            }
         },
 
         /**
@@ -2403,7 +2465,7 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
                                 }
                             }
                         } else {
-                            fconsole(key + '_error' + ' not found (form show errors)');
+                            if (Fabrik.debug) fconsole('Fabrik form::showErrors: ' + key + '_error' + ' not found');
                         }
                     });
                 }
@@ -2434,8 +2496,8 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
             this.form.getElements('.fabrikError').addClass('fabrikHide');
         },
 
-	    /**
-	     * Reset errors
+        /**
+         * Reset errors
          */
         clearErrors: function () {
             jQuery(this.form).find('.fabrikError').removeClass('fabrikError')
@@ -2512,7 +2574,7 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
 
         addMustValidate: function (el) {
             if (this.options.ajaxValidation && this.options.toggleSubmit) {
-	            this.mustValidateEls.set(el.element.id, el.options.mustValidate);
+                this.mustValidateEls.set(el.element.id, el.options.mustValidate);
                 if (el.options.mustValidate) {
                     this.options.mustValidate = true;
                     this.toggleSubmit(false);
@@ -2526,22 +2588,22 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
                 if (on === true) {
                     submit.disabled = '';
                     submit.setStyle('opacity', 1);
-	                if (this.options.toggleSubmitTip !== '') {
-		                jQuery(this.form).find('.fabrikSubmitWrapper').tooltip('destroy');
-		                this.toggleSubmitTipAdded = false;
-	                }
+                    if (this.options.toggleSubmitTip !== '') {
+                        jQuery(this.form).find('.fabrikSubmitWrapper').tooltip('destroy');
+                        this.toggleSubmitTipAdded = false;
+                    }
                 }
                 else {
                     submit.disabled = 'disabled';
                     submit.setStyle('opacity', 0.5);
-	                if (this.options.toggleSubmitTip !== '') {
-	                    if (!this.toggleSubmitTipAdded) {
-		                    //jQuery(this.form).find('.fabrikSubmitWrapper').data('toggle', 'tooltip');
-		                    //jQuery(this.form).find('.fabrikSubmitWrapper').attr('title', 'Your form cannot be saved until all inputs have been validated');
-		                    jQuery(this.form).find('.fabrikSubmitWrapper').tooltip();
-		                    this.toggleSubmitTipAdded = true;
-	                    }
-	                }
+                    if (this.options.toggleSubmitTip !== '') {
+                        if (!this.toggleSubmitTipAdded) {
+                            //jQuery(this.form).find('.fabrikSubmitWrapper').data('toggle', 'tooltip');
+                            //jQuery(this.form).find('.fabrikSubmitWrapper').attr('title', 'Your form cannot be saved until all inputs have been validated');
+                            jQuery(this.form).find('.fabrikSubmitWrapper').tooltip();
+                            this.toggleSubmitTipAdded = true;
+                        }
+                    }
                 }
                 Fabrik.fireEvent('fabrik.form.togglesubmit', [this, on]);
             }
