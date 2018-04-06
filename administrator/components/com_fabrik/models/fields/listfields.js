@@ -57,7 +57,7 @@ var ListFieldsElement = new Class({
 			}.bind(this));
 		} else {
 			if (typeOf(document.id(this.options.conn)) === 'null') {
-				this.cnnperiodical = this.getCnn.periodical(500, this);
+				this.cnnperiodical = this.getCnn.periodical(100, this);
 			} else {
 				this.setUp();
 			}
@@ -99,6 +99,8 @@ var ListFieldsElement = new Class({
 		this.el = document.id(this.el);
 		if (this.options.mode === 'gui') {
 			this.select = this.el.getParent().getElement('select.elements');
+			var len = this.el.value.length;
+			this.setSelection(this.el, len, len);
 		}
 
 		document.id(this.options.conn).addEvent('change', function () {
@@ -111,7 +113,7 @@ var ListFieldsElement = new Class({
 		// See if there is a connection selected
 		var v = document.id(this.options.conn).get('value');
 		if (v !== '' && v !== -1) {
-			this.periodical = this.updateMe.periodical(500, this);
+			this.periodical = this.updateMe.periodical(100, this);
 		}
 		var len = this.el.value.length;
 		this.setSelection(this.el, len, len);
@@ -122,7 +124,6 @@ var ListFieldsElement = new Class({
 		if (this.addWatched === true) {
 			return;
 		}
-		console.log('watch add', this);
 		this.addWatched = true;
 		var add = this.el.getParent().getElement('button');
 
@@ -169,7 +170,7 @@ var ListFieldsElement = new Class({
 				var els;
 
 				// Googlemap inside repeat group & modal repeat
-				if (typeOf(document.id(this.strEl)) !== null) {
+				if (typeOf(document.id(this.strEl)) !== 'null') {
 					this.el = document.id(this.strEl);
 				}
 				if (this.options.mode === 'gui') {
@@ -291,6 +292,7 @@ var ListFieldsElement = new Class({
 	insertTextAtCaret: function (el, text) {
 		var pos = this.getInputSelection(el).end;
 		var val = el.value;
+		// Intelligent insertion e.g. on databasejoin / advanced / add description adding whitespace as appropriate depending on caret position
 		if (pos !== 0 && val.substring(pos-1, 1) !== ' ') {
 			text = ' ' + text;
 		}
