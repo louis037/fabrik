@@ -14,6 +14,14 @@
 
 	</fieldset>
 
+	<fieldset addfieldpath="/administrator/components/com_fabrik/models/fields"
+		name="access-help">
+
+		<field type="helplink"
+			url="COM_FABRIK_LIST_HELP_ACCESS" />
+
+	</fieldset>
+
 	<fieldset name="access">
 
 		<field name="access"
@@ -26,7 +34,15 @@
 	</fieldset>
 
 	<fieldset addfieldpath="/administrator/components/com_fabrik/models/fields"
-		   name="main">
+		name="main-help">
+
+		<field type="helplink"
+			url="COM_FABRIK_LIST_HELP_DETAILS_TEXT" />
+
+	</fieldset>
+
+	<fieldset addfieldpath="/administrator/components/com_fabrik/models/fields"
+		name="main">
 
 		<field name="id"
 			type="text"
@@ -78,6 +94,14 @@
 
 	</fieldset>
 
+	<fieldset addfieldpath="/administrator/components/com_fabrik/models/fields"
+		name="layout-help">
+
+		<field type="helplink"
+			url="COM_FABRIK_LIST_HELP_DETAILS_LAYOUT" />
+
+	</fieldset>
+
 	<fieldset name="main_template">
 
 		<field name="template"
@@ -93,7 +117,15 @@
 	</fieldset>
 
 	<fieldset addfieldpath="/administrator/components/com_fabrik/models/fields"
-		   name="grouping">
+		name="groupby-help">
+
+		<field type="helplink"
+			url="COM_FABRIK_LIST_HELP_DATA_GROUPBY" />
+
+	</fieldset>
+
+	<fieldset addfieldpath="/administrator/components/com_fabrik/models/fields"
+			name="grouping">
 
 		<field name="group_by"
 			type="listfields"
@@ -101,6 +133,14 @@
 			label="COM_FABRIK_FIELD_GROUP_BY_LABEL"
 			description="COM_FABRIK_FIELD_GROUP_BY_DESC"
 		/>
+
+	</fieldset>
+
+	<fieldset addfieldpath="/administrator/components/com_fabrik/models/fields"
+		name="data-help">
+
+		<field type="helplink"
+			url="COM_FABRIK_LIST_HELP_DATA_DATA" />
 
 	</fieldset>
 
@@ -155,6 +195,14 @@
 			<option value="0">JNO</option>
 			<option value="1">JYES</option>
 		</field>
+
+	</fieldset>
+
+	<fieldset addfieldpath="/administrator/components/com_fabrik/models/fields"
+		name="publishing-help">
+
+		<field type="helplink"
+			url="COM_FABRIK_LIST_HELP_PUBLISHING_PUBLISHING" />
 
 	</fieldset>
 
@@ -236,7 +284,7 @@
 		</fieldset>
 
 		<fieldset addfieldpath="/administrator/components/com_fabrik/models/fields"
-			   name="grouping2">
+			name="grouping2">
 
 			<field name="group_by_raw"
 				type="radio"
@@ -321,6 +369,13 @@
 				description="COM_FABRIK_FIELD_VIEW_RECORDS_DESC"
 			/>
 
+			<!--field name="allow_view_details2"
+				type="listfields"
+				valueformat="tableelement"
+				label="COM_FABRIK_FIELD_OR_USE_FIELD_LABEL"
+				description="COM_FABRIK_FIELD_OR_USE_FIELD_DESC"
+			/-->
+
 			<field name="allow_edit_details"
 				type="accesslevel"
 				default="1"
@@ -362,6 +417,14 @@
 				label="COM_FABRIK_FIELD_DROP_RECORDS_LABEL"
 				description="COM_FABRIK_FIELD_DROP_RECORDS_DESC"
 			/>
+
+		</fieldset>
+
+		<fieldset addfieldpath="/administrator/components/com_fabrik/models/fields"
+			name="filters-help">
+
+			<field type="helplink"
+				url="COM_FABRIK_LIST_HELP_DETAILS_FILTERS" />
 
 		</fieldset>
 
@@ -451,8 +514,8 @@
 			>
 				<fields name="params">
 					<fieldset modal="true"
-						   name="list_search_elements_modal"
-						   repeat="true">
+						name="list_search_elements_modal"
+						repeat="true">
 						<field name="search_elements"
 							label="COM_FABRIK_SEARCH_ELEMENTS_LABEL"
 							description="COM_FABRIK_SEARCH_ELEMENTS_LABEL_DESC"
@@ -513,6 +576,14 @@
 				label="COM_FABRIK_FIELD_LIST_FILTER_COLS_LABEL"
 				description="COM_FABRIK_FIELD_LIST_FILTER_COLS_DESC"
 			/>
+
+		</fieldset>
+
+		<fieldset addfieldpath="/administrator/components/com_fabrik/models/fields"
+			name="navigation-help">
+
+			<field type="helplink"
+				url="COM_FABRIK_LIST_HELP_DETAILS_NAVIGATION" />
 
 		</fieldset>
 
@@ -606,6 +677,14 @@
 
 		</fieldset>
 
+		<fieldset addfieldpath="/administrator/components/com_fabrik/models/fields"
+			name="rss-help">
+
+			<field type="helplink"
+				url="COM_FABRIK_LIST_HELP_PUBLISHING_RSS" />
+
+		</fieldset>
+
 		<fieldset name="rss">
 
 			<field name="rss"
@@ -655,6 +734,14 @@
 				label="COM_FABRIK_FIELD_RSS_LIMIT_MAX_LABEL"
 				description="COM_FABRIK_FIELD_RSS_LIMIT_MAX_DESC"
 			/>
+
+		</fieldset>
+
+		<fieldset addfieldpath="/administrator/components/com_fabrik/models/fields"
+			name="csv-help">
+
+			<field type="helplink"
+				url="COM_FABRIK_LIST_HELP_PUBLISHING_CSV" />
 
 		</fieldset>
 
@@ -782,8 +869,8 @@
 			>
 				<fields name="params">
 					<fieldset modal="true"
-						   name="csv_elements_modal"
-						   repeat="true">
+							  name="csv_elements_modal"
+							  repeat="true">
 						<field name="show_in_csv"
 							type="listfields"
 							label="COM_FABRIK_ELEMENTS"
@@ -878,6 +965,14 @@
 				<option value="n">n</option>
 				<option value="r">r</option>
 			</field>
+
+		</fieldset>
+
+		<fieldset addfieldpath="/administrator/components/com_fabrik/models/fields"
+			name="search-help">
+
+			<field type="helplink"
+				url="COM_FABRIK_LIST_HELP_PUBLISHING_JOOMLASEARCH" />
 
 		</fieldset>
 
@@ -1107,8 +1202,8 @@
 			>
 				<fields name="params">
 					<fieldset modal="true"
-						   name="list_responsive_elements_modal"
-						   repeat="true">
+							  name="list_responsive_elements_modal"
+							  repeat="true">
 						<field name="responsive_elements"
 							label="COM_FABRIK_ELEMENT"
 							type="listfields"
@@ -1131,6 +1226,14 @@
 					</fieldset>
 				</fields>
 			</field>
+
+		</fieldset>
+
+		<fieldset addfieldpath="/administrator/components/com_fabrik/models/fields"
+			name="links-help">
+
+			<field type="helplink"
+				url="COM_FABRIK_LIST_HELP_DETAILS_LINKS" />
 
 		</fieldset>
 
@@ -1383,6 +1486,14 @@
 
 		</fieldset>
 
+		<fieldset addfieldpath="/administrator/components/com_fabrik/models/fields"
+			name="prefilter-help">
+
+			<field type="helplink"
+				url="COM_FABRIK_LIST_HELP_DATA_PREFILTERS" />
+
+		</fieldset>
+
 		<fieldset name="prefilter">
 
 			<field name="menu_module_prefilters_override"
@@ -1405,6 +1516,14 @@
 
 		</fieldset>
 
+		<fieldset addfieldpath="/administrator/components/com_fabrik/models/fields"
+			name="notes-help">
+
+			<field type="helplink"
+				url="COM_FABRIK_LIST_HELP_DETAILS_NOTES" />
+
+		</fieldset>
+
 		<fieldset name="notes">
 
 			<field name="note"
@@ -1414,6 +1533,14 @@
 				label="COM_FABRIK_FIELD_NOTE_LABEL"
 				description="COM_FABRIK_FIELD_NOTE_DESC"
 			/>
+
+		</fieldset>
+
+		<fieldset addfieldpath="/administrator/components/com_fabrik/models/fields"
+			name="advanced-help">
+
+			<field type="helplink"
+				url="COM_FABRIK_LIST_HELP_DETAILS_ADVANCED" />
 
 		</fieldset>
 
@@ -1502,6 +1629,14 @@
 
 		</fieldset>
 
+		<fieldset addfieldpath="/administrator/components/com_fabrik/models/fields"
+			name="openarchive-help">
+
+			<field type="helplink"
+				url="COM_FABRIK_LIST_HELP_PUBLISHING_OPENARCHIVE" />
+
+		</fieldset>
+
 		<fieldset name="open_archive_initiative">
 
 			<field name="open_archive_active"
@@ -1537,8 +1672,8 @@
 			>
 				<fields name="params">
 					<fieldset modal="true"
-						   name="open_archive_elements_modal"
-						   repeat="true">
+							  name="open_archive_elements_modal"
+							  repeat="true">
 						<field name="dublin_core_element"
 							label="COM_FABRIK_ELEMENT"
 							type="listfields"
@@ -1616,6 +1751,14 @@
 			</field>
 		</fieldset>
 
+		<fieldset addfieldpath="/administrator/components/com_fabrik/models/fields"
+			name="quickicon-help">
+
+			<field type="helplink"
+				url="COM_FABRIK_LIST_HELP_PUBLISHING_QUICKICONS" />
+
+		</fieldset>
+
 		<fieldset name="dashboard">
 			<field name="dashboard"
 				type="radio"
@@ -1633,6 +1776,14 @@
 				description="COM_FABRIK_DASHBOARD_ICON_DESC"
 				label="COM_FABRIK_DASHBOARD_ICON_LABEL"
 			/>
+		</fieldset>
+
+		<fieldset addfieldpath="/administrator/components/com_fabrik/models/fields"
+			name="joins-help">
+
+			<field type="helplink"
+				url="COM_FABRIK_LIST_HELP_DATA_JOINS" />
+
 		</fieldset>
 
 		<fieldset name="joins">
@@ -1691,6 +1842,17 @@
 				type="text"/>
 			<field name="table_join_key"
 				type="text"/>
+<<<<<<< HEAD
+=======
+		</fieldset>
+
+		<fieldset addfieldpath="/administrator/components/com_fabrik/models/fields"
+			name="relateddata-help">
+
+			<field type="helplink"
+				url="COM_FABRIK_LIST_HELP_DATA_RELATEDDATA" />
+
+>>>>>>> improve-backend-list-help
 		</fieldset>
 
 		<fieldset name="facetedlinks2">
