@@ -13,18 +13,18 @@ namespace Fabrik\Helpers;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use JBrowser;
-use JComponentHelper;
-use JFactory;
-use JFile;
-use JHtml;
-use JHtmlBootstrap;
-use JModelLegacy;
-use JRoute;
-use JText;
-use JUri;
-use JVersion;
-use stdClass;
+use \JComponentHelper;
+use \stdClass;
+use \JModelLegacy;
+use \JHtmlBootstrap;
+use \JVersion;
+use \JUri;
+use \JRoute;
+use \JHtml;
+use \JFactory;
+use \JFile;
+use \JText;
+use \JBrowser;
 
 jimport('joomla.filesystem.file');
 
@@ -1018,6 +1018,8 @@ EOD;
 				JHTML::_('behavior.calendar');
 			}
 
+			self::script(array('Fabrik'=> $mediaFolder . '/fabrik'), "\tFabrik.debug=" . (self::isDebug() ? "true;" : "false;"), '-min.js');
+
 			$liveSiteReq['Chosen'] = $mediaFolder . '/chosen-loader';
 			$liveSiteReq['Fabrik'] = $mediaFolder . '/fabrik';
 
@@ -1065,7 +1067,6 @@ EOD;
 
 				$liveSiteSrc[] = "\tFabrik.liveSite = '" . COM_FABRIK_LIVESITE . "';";
 				$liveSiteSrc[] = "\tFabrik.package = '" . $app->getUserState('com_fabrik.package', 'fabrik') . "';";
-				$liveSiteSrc[] = "\tFabrik.debug = " . (self::isDebug() ? 'true;' : 'false;');
 
 				// need to put jLayouts in session data, and add it in the system plugin buildjs(), so just add %%jLayouts%% placeholder
 				//$liveSiteSrc[] = "\tFabrik.jLayouts = " . json_encode(ArrayHelper::toObject(self::$jLayoutsJs)) . ";";
@@ -1329,6 +1330,8 @@ EOD;
 			$r->admin       = 'administrator/components/com_fabrik/views';
 			$r->adminfields = 'administrator/components/com_fabrik/models/fields';
 
+			$r->jui         = 'media/jui/js';
+			$r->system      = 'media/system/js';
 			$r->jQueryUI   = 'media/com_fabrik/js/lib/jquery-ui/jquery-ui';
 			$r->chosen     = 'media/jui/js/chosen.jquery.min';
 			$r->ajaxChosen = 'media/jui/js/ajax-chosen.min';
@@ -1563,7 +1566,7 @@ EOD;
 
 		if (is_array($onLoad))
 		{
-			$onLoad = implode("\n", $onLoad);
+			$onLoad = implode("\n\t", $onLoad);
 		}
 
 		$ext   = self::isDebug() ? '.js' : $minSuffix;
@@ -1652,7 +1655,7 @@ EOD;
 
 		$files     = "['" . implode("', '", $files) . "']";
 		$require[] = 'requirejs(' . ($files) . ', function (' . implode(", ", $names) . ') {';
-		$require[] = $onLoad;
+		$require[] = "\t" . $onLoad;
 		$require[] = '});';
 		$require[] = "\n";
 		$require   = implode("\n", $require);
@@ -1843,9 +1846,9 @@ EOD;
 	 */
 	public static function debug($content, $title = 'output:')
 	{
-		$config  = JComponentHelper::getParams('com_fabrik');
-		$app     = JFactory::getApplication();
-		$input   = $app->input;
+		$config = JComponentHelper::getParams('com_fabrik');
+		$app    = JFactory::getApplication();
+		$input  = $app->input;
 
 		if ($config->get('use_fabrikdebug') == 0)
 		{
@@ -1862,24 +1865,18 @@ EOD;
 			return;
 		}
 
-		$jconfig = JFactory::getConfig();
-		$secret = $jconfig->get('secret');
-
 		echo '<div class="fabrikDebugOutputTitle">' . $title . '</div>';
 		echo '<div class="fabrikDebugOutput fabrikDebugHidden">';
 
 		if (is_object($content) || is_array($content))
 		{
-		    $content = print_r($content, true);
-			$content = str_replace($secret, 'xxxxxxxxx', $content);
-			echo '<pre>' . htmlspecialchars($content) . '</pre>';
+			echo '<pre>' . htmlspecialchars(print_r($content, true)) . '</pre>';
 		}
 		else
 		{
-		    $content = str_replace($secret, 'xxxxxxxxx', $content);
 			// Remove any <pre> tags provided by e.g. JQuery::dump
 			$content = preg_replace('/(^\s*<pre( .*)?>)|(<\/pre>\s*$)/i', '', $content);
-			echo '<pre>' . htmlspecialchars($content) . '</pre>';
+			echo htmlspecialchars($content);
 		}
 
 		echo '</div>';
@@ -2350,11 +2347,8 @@ EOT;
 
 		foreach ($bits as $key => $val)
 		{
-		    if (!\FabrikWorker::isJSON($val))
-            {
-			    $val = str_replace('"', "'", $val);
-			    $p .= $key . '="' . $val . '" ';
-			}
+			$val = str_replace('"', "'", $val);
+			$p .= $key . '="' . $val . '" ';
 		}
 
 		return $p;
@@ -3085,11 +3079,11 @@ EOT;
 	public static function icon($icon, $label = '', $properties = '', $nameOnly = false)
 	{
 		$icon = Html::getLayout('fabrik-icon')
-            ->render((object) array(
-                    'icon' => $icon,
-                    'properties' => $properties,
-                    'nameOnly' => $nameOnly
-            ));
+			->render((object) array(
+							'icon' => $icon,
+							'properties' => $properties,
+							'nameOnly' => $nameOnly
+			));
 
 		if ($label != '' && !$nameOnly)
 		{
@@ -3144,5 +3138,92 @@ EOT;
         }
 
         return $spans[$viewport][$size];
+	}
+
+	/**
+	 * Get form repeat id
+	 *
+	 * Helper function to determine the form id of another form field
+	 * based on whether it is non repeating, a Fabrik repeatgroup or a Joomla subform-repeatable.
+	 *
+	 * @param   string   $other     name or id of the other element
+	 * @param   boolean  $otherRpt  is the other element repeated
+	 * @param   string   $id        id of this element
+	 * @param   string   $idCount   repeat count of this element ('' if not repeated)
+	 *
+	 * @return  string              id of the other element (typically used for javascript watching)
+	 */
+	public static function getFormRepeatId($other, $otherRpt, $id, $idCount)
+	{
+		// remove jform_ from beginning of both ids (we will add it back later)
+		$id = substr($id, 0, 6) == 'jform_' ? substr($id, 6) : $id;
+		$other = substr($other, 0, 6) == 'jform_' ? substr($other, 6) : $other;
+
+		if ($otherRpt) {
+
+			// In Fabrik repeatgroup - Joomla subform-repeatable does its own counting (see below)
+			if ($idCount !== '')
+			{
+				$other = $other . '-' . $idCount;
+			}
+			else
+			{
+				/** Joomla Subform Repeat
+				*
+				* Joomla Subform Repeat does NOT use -x as a suffix, but instead uses the form joomla_params__subform__subformN__fieldname
+				* where the N is the repeat counter.
+				* $this->id will have the N replaced once by X for the SubForm template, and then with 0, 1 etc. for php rendered instances.
+				*
+				* Algorithm:
+				* 1. See if tables id has Joomla subForm format of repeats and if so...
+				* 2. Extract repeatCounter
+				* 3. See if connection field has common repeat prefix...
+				* 3a. Of so, insert or replace the repeatCounter from the tables id
+				* 3b. If not, use the id prefix (so for Joomla subforms user can use the connection field name without any prefix)
+				**/
+				$subForm = false;
+				$idParts = explode('__', $id);
+				for ($i = count($idParts) - 1; $i > 0; $i--)
+				{
+					if ($idParts[$i - 1] === substr($idParts[$i], 0, strlen($idParts[$i - 1])))
+					{
+						$idx = substr($idParts[$i], strlen($idParts[$i - 1]));
+						if ($idx === 'X' || (is_numeric($idx) && is_int(0 + $idx)))
+						{
+							$subForm = true;
+							$otherParts = array_merge(array_slice($idParts, 0, $i),array($idParts[$i - 1]));
+							$idPrefix = implode('__', $otherParts);
+							if (substr($other, 0, strlen($idPrefix)) === $idPrefix)
+							{
+								// $other already in J! subform-repeatble format
+								$other = $idPrefix . $idx . '__' . (explode('__', substr($other, strlen($idPrefix)), 2)[1]);
+							}
+							elseif (substr($other, 0, 13) === 'jform_params_')
+							{
+								$other = $idPrefix . $idx . '__' . substr($other, 13);
+							}
+							elseif (substr($other, 0, 7) === 'params_')
+							{
+								$other = $idPrefix . $idx . '__' . substr($other, 7);
+							}
+							else
+							{
+								$other = $idPrefix . $idx . '__' . $other;
+							}
+							break;
+						}
+					}
+				}
+			}
+		}
+		else
+		{
+			// other field is not repeated
+			if (substr($other, 0, 7) !== 'params_') {
+				$other = 'params_' . $other;
+			}
+		}
+
+		return $other;
 	}
 }

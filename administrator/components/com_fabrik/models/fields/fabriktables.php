@@ -72,6 +72,8 @@ class JFormFieldFabrikTables extends JFormFieldList
 			$query->select('id AS value, label AS text')->from('#__{package}_lists')->where('published <> -2')->order('label ASC');
 			$db->setQuery($query);
 			$rows = $db->loadObjectList();
+			$rows = array_unshift($rows, JHTML::_('select.option', '', FText::_('COM_FABRIK_SELECT_LIST')));
+
 		}
 		else
 		{
@@ -89,8 +91,7 @@ class JFormFieldFabrikTables extends JFormFieldList
 
 	protected function getInput()
 	{
-		$c                  = isset($this->form->repeatCounter) ? (int) $this->form->repeatCounter : 0;
-		$connectionDd       = $this->getAttribute('observe');
+		$connectionDd       = $this->getAttribute('observe', $this->getAttribute('connection'));
 		$connectionInRepeat = Worker::toBoolean($this->getAttribute('connection_in_repeat', 'true'), true);
 		$script             = array();
 
@@ -101,30 +102,20 @@ class JFormFieldFabrikTables extends JFormFieldList
 
 		if ($connectionDd != '' && !array_key_exists($this->id, $fabrikTables))
 		{
-			$repeatCounter = empty($this->form->repeatCounter) ? 0 : $this->form->repeatCounter;
-
-			if ($this->form->repeat)
-			{
-				// In repeat fieldset/group
-				$connectionDd = $connectionDd . '-' . $repeatCounter;
-			}
-			else
-			{
-				$connectionDd = ($c === false || !$connectionInRepeat) ? $connectionDd : $connectionDd . '-' . $c;
-			}
+			$repeatCounter = $this->form->repeat ? (empty($this->form->repeatCounter) ? 0 : $this->form->repeatCounter) : '';
+			$connectionDd = Html::getFormRepeatId($connectionDd, $connectionInRepeat, $this->id, $repeatCounter);
 
 			$opts           = new stdClass;
-			$opts->livesite = COM_FABRIK_LIVESITE;
-			$opts->conn     = 'jform_' . $connectionDd;
-
-			$opts->value         = $this->value;
+			// Following lines commented out because they are not used in fabriktables.js
+			// $opts->livesite = COM_FABRIK_LIVESITE;
+			// $opts->container     = 'test';
+			// $opts->inRepeatGroup = $this->form->repeat;
+			// $opts->repeatCounter = $repeatCounter;
+			$opts->conn          = 'jform_' . $connectionDd;
 			$opts->connInRepeat  = $connectionInRepeat;
-			$opts->inRepeatGroup = $this->form->repeat;
-			$opts->repeatCounter = $repeatCounter;
-			$opts->container     = 'test';
+			$opts->value         = $this->value;
 			$opts                = json_encode($opts);
-			$script[]            = "var p = new fabriktablesElement('$this->id', $opts);";
-			$script[]            = "FabrikAdmin.model.fields.fabriktable['$this->id'] = p;";
+			$script              = "FabrikAdmin.model.fields.fabriktable['$this->id'] = new fabriktablesElement('$this->id', $opts);";
 
 			$fabrikTables[$this->id] = true;
 			$src['Fabrik']           = 'media/com_fabrik/js/fabrik.js';
