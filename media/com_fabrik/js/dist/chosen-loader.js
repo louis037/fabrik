@@ -1,3 +1,3 @@
 /*! Fabrik */
 
-require(["fab/fabrik","jquery"],function(n,d){n.buildChosen||(n.buildChosen=function(n,i){if(void 0!==d(n).chosen)return d(n).each(function(n,e){var o,a=d(e).data("chosen-options");o=a?d.extend({},i,a):i,d(e).chosen(o),d(e).addClass("chzn-done")}),!0},n.buildAjaxChosen=function(n,e,o){if(void 0!==d(n).ajaxChosen)return d(n).addClass("chzn-done"),d(n).ajaxChosen(e,o)})});
+require(["fab/fabrik","jquery"],function(o,a){o.buildChosen||(o.buildChosen=function(n,i){if(o.chosenOptions||(o.chosenOptions=i),void 0!==a(n).chosen)return a(n).each(function(n,o){var e,s=a(o).data("chosen-options");e=s?a.extend({},i,s):i,a(o).chosen(e),a(o).addClass("chzn-done")}),!0},o.buildAjaxChosen=function(n,o,e){if(void 0!==a(n).ajaxChosen)return a(n).addClass("chzn-done"),a(n).ajaxChosen(o,e)})});
