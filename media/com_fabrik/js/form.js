@@ -408,6 +408,7 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
                     id = bits.join('_');
                 }
             }
+
             // Create the fx key
             id = id.replace('fabrik_trigger_', '');
             if (id.slice(0, 6) === 'group_') {
@@ -572,7 +573,7 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
         hideGroupTab: function (groupId) {
             var tab = this.getGroupTab(groupId);
             if (tab !== false) {
-                tab.hide();
+                jQuery(tab).hide();
                 if (tab.hasClass('active')) {
                     if (tab.getPrevious()) {
                         jQuery(tab.getPrevious().getFirst()).tab('show');
@@ -606,7 +607,7 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
         showGroupTab: function (groupId) {
             var tab = this.getGroupTab(groupId);
             if (tab !== false) {
-                tab.show();
+                jQuery(tab).show();
             }
         },
 
@@ -1800,19 +1801,6 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
                     self.addingOrDeletingGroup = false;
                 }
             }));
-
-/*            this.form.addEvent('click:relay(.fabrikSubGroup)', function (e, subGroup) {
-                var r = subGroup.getElement('.fabrikGroupRepeater');
-                if (r) {
-                    subGroup.addEvent('mouseenter', function (e) {
-                        r.fade(1);
-                    });
-                    subGroup.addEvent('mouseleave', function (e) {
-                        r.fade(0.2);
-                    });
-                }
-            }.bind(this));
-*/
         },
 
         /**
@@ -1853,6 +1841,7 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
                 if (canRepeat.toInt() !== 1) {
                     return;
                 }
+
                 var repeat_counter = this.form.getElement('#fabrik_repeat_group_' + groupId + '_counter'),
                     repeat_rows, repeat_real, addButton, deleteButton, i, repeat_id_0, deleteEvent;
 
@@ -2044,10 +2033,16 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
         },
 
         hideLastGroup: function (groupId, subGroup) {
+            var msg = this.options.noDataMsg[groupId];
+
+            if (msg === '') {
+                msg = 'COM_FABRIK_NO_REPEAT_GROUP_DATA';
+            }
+
             var sge = subGroup.getElement('.fabrikSubGroupElements');
             var notice = new Element(
                 'div', {'class': 'fabrikNotice alert'}
-            ).appendText(Joomla.JText._('COM_FABRIK_NO_REPEAT_GROUP_DATA'));
+            ).appendText(Joomla.JText._(msg));
             if (typeOf(sge) === 'null') {
                 sge = subGroup;
                 var add = sge.getElement('.addGroup');
@@ -2272,6 +2267,7 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
                     } else {
                         newEl.cloneUpdateIds(lastinput.id);
                     }
+
                     newElementControllers.push(newEl);
                 }
             }.bind(this));
