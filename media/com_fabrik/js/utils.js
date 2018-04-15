@@ -65,7 +65,8 @@ function fdebug() {
 	}
 }
 
-function fDeepClone(obj, higher = []) {
+function fDeepClone(obj, higher) {
+	higher = (typeof higher !== 'undefined') ?  higher : [];
 	try {
 		if (obj === null || typeof obj !== 'object') return obj;
 		if (obj.constructor === Date || obj.constructor == RegExp || obj.constructor == Function ||
