@@ -2606,7 +2606,7 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
         }
     });
 
-        // Deprecated - think its no longer used.
+    // Deprecated - think its no longer used.
     Fabrik.form = function (ref, id, opts) {
         var form = new FbForm(id, opts);
         Fabrik.addBlock(ref, form);
