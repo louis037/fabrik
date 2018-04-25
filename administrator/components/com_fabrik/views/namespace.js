@@ -12,7 +12,7 @@ define(['jquery'], function ($) {
 	FabrikAdmin = {};
 
 	// Various Joomla element plugins used to control JForm elements
-	FabrikAdmin.model = {'fields': {'element': {}}};
+	FabrikAdmin.model = {'fields': {'fabriktable': {}, 'element': {}}};
 
 	// Function to apply tips to page, after ajax call has loaded a plugin's form
 	FabrikAdmin.reTip = function () {
