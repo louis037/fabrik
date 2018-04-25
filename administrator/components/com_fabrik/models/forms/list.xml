@@ -1842,8 +1842,6 @@
 				type="text"/>
 			<field name="table_join_key"
 				type="text"/>
-<<<<<<< HEAD
-=======
 		</fieldset>
 
 		<fieldset addfieldpath="/administrator/components/com_fabrik/models/fields"
@@ -1852,7 +1850,6 @@
 			<field type="helplink"
 				url="COM_FABRIK_LIST_HELP_DATA_RELATEDDATA" />
 
->>>>>>> improve-backend-list-help
 		</fieldset>
 
 		<fieldset name="facetedlinks2">
