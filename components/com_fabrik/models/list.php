@@ -960,26 +960,20 @@ class FabrikFEModelList extends JModelForm
 		FabrikHelperHTML::debug((string) $fabrikDb->getQuery(), 'list GetData:' . $this->getTable()->label);
 		JDEBUG ? $profiler->mark('before query run') : null;
 
-		/* set 2nd param to false in attempt to stop joomfish db adaptor from translating the original query
-		 * fabrik3 - 2nd param in j16 is now used - guessing that joomfish now uses the third param for the false switch?
-		* $$$ rob 26/09/2011 note Joomfish not currently released for J1.7
-		*/
+		// PR#1927 Additional error information if fabrik debug is on
 		try
 		{
+			/* set 2nd param to false in attempt to stop joomfish db adaptor from translating the original query
+			 * fabrik3 - 2nd param in j16 is now used - guessing that joomfish now uses the third param for the false switch?
+			* $$$ rob 26/09/2011 note Joomfish not currently released for J1.7
+			*/
 			$this->data = $fabrikDb->loadObjectList('', 'stdClass', false);
 		}
 		catch (RuntimeException $e)
 		{
 			$item = $this->getTable();
 			$msg = 'FABRIK ERROR: Incorrect query for the list "' . $item->label . '"';
-			if (FabrikHelperHTML::isDebug(true))
-			{
-				if (!is_string($query))
-				{
-					$query = $query->__toString();
-				}
-				$msg .= ': ' . $e->getMessage() . ': ' . $query;
-			}
+			$msg .= FabrikHelperHTML::isDebug(true) ? ': ' . $e->getMessage() . ': ' . (string) $query : '';
 			throw new RuntimeException($msg, $e->getCode());
 		}
 
@@ -4878,7 +4872,10 @@ class FabrikFEModelList extends JModelForm
 					}
 					catch (Exception $e)
 					{
-						throw new ErrorException('alter structure: ' . $fabrikDb->getErrorMsg(), 500);
+						// PR#1927 Additional error information if fabrik debug is on
+						$msg = 'FABRIK ERROR: ' . $fabrikDb->getErrorMsg();
+						$msg .= FabrikHelperHTML::isDebug(true) ? ' in: ' . (string) $fabrikDb->getQuery() : '';
+						throw new ErrorException($msg, $e->getCode());
 					}
 				}
 			}
