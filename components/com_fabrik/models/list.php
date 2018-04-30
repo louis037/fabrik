@@ -8298,9 +8298,12 @@ class FabrikFEModelList extends JModelForm
 		$item->name = $item->label = 'parent_id';
 		$item->hidden = 1;
 		$item->group_id = $groupId;
-		$item->text_format = "integer";
-		$item->integer_length = 11;
-		$item->decimal_length = 0;
+
+		// PR#1945 Fix params to match parent_id column created in group.php:makeJoinedGroup()
+		$params = json_decode($item->params);
+		$params->text_format = "integer";
+		$params->integer_length = 11;
+		$item->params = json_encode($params);
 
 		if (!$item->store())
 		{
