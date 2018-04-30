@@ -4823,6 +4823,14 @@ class FabrikFEModelList extends JModelForm
 		if ($group->isJoin())
 		{
 			$tableName = $group->getJoinModel()->getJoin()->table_join;
+
+			// PR#1927 Additional error if Group is set as is_join but join does not exist
+			if (empty($tableName)) {
+				$msg = 'FABRIK ERROR: Metadata inconsistency: Group "' . $group->getName() . '" is recorded as is_join=1, but join details are missing.<br/>'
+					. "Try editing and re-saving the Group, but if this doesn't work you will need to fix this directly in the metadata tables.";
+				throw new ErrorException($msg, 500);
+			}
+
 			$keyData = $this->getPrimaryKeyAndExtra($tableName);
 			$primaryKey = $keyData[0]['colname'];
 		}
