@@ -1854,7 +1854,7 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
                     return;
                 }
                 var repeat_counter = this.form.getElement('#fabrik_repeat_group_' + groupId + '_counter'),
-                    repeat_rows, repeat_real, addButton, deleteButton, i, repeat_id_0, deleteEvent;
+                    repeat_rows, repeat_real;
 
                 if (typeOf(repeat_counter) === 'null') {
                     return;
@@ -1869,7 +1869,7 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
                         // Do not reduce rows shown to zero if there are validation errors
                         var fabErrors = repeat_id_0.getElements('.fabrikError');
 
-                        if (typeOf(fabErrors) === 'null' && repeat_id_0.value === '') {
+                        if (fabErrors.length === 0 && repeat_id_0.value === '') {
                             repeat_real = 0;
                         }
                     }
