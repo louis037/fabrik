@@ -20,20 +20,26 @@ if (class_exists('NumberFormatter'))
 	$d->amount = $formatter->formatCurrency($d->amount, $d->currencyCode);
 }
 
-$d->bottomText = str_ireplace('{stripe_amount}', $d->amount, $d->bottomText);
-$d->bottomText = str_ireplace('{stripe_item}', $d->item, $d->bottomText);
+$d->bottomText = str_ireplace('{stripe_amount}', '<span class="fabrikStripePrice">' . $d->amount . '</span>', $d->bottomText);
+$d->bottomText = str_ireplace('{stripe_item}', '<span class="fabrikStripeItem">' . $d->item . '</span>', $d->bottomText);
 
 if ($d->testMode) :
 	?>
-	<div class="fabriStripeTestMode">
+    <div class="fabriStripeTestMode">
 		<?php echo FText::_('PLG_FORM_STRIPE_TEST_MODE_TEXT'); ?>
-	</div>
-	<?php
+    </div>
+<?php
 endif;
 
+if ($d->showCoupon) :
+	?>
+    <div class="fabrikStripeCouponText">
+		<?php echo $d->couponMsg; ?>
+    </div>
+<?php
+endif;
 ?>
+
 <div class="fabrikStripeBottomText">
 	<?php echo $d->bottomText; ?>
 </div>
-
-
