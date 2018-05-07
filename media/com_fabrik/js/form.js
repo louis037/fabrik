@@ -408,7 +408,6 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
                     id = bits.join('_');
                 }
             }
-
             // Create the fx key
             id = id.replace('fabrik_trigger_', '');
             if (id.slice(0, 6) === 'group_') {
@@ -1577,8 +1576,8 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
                                     // Process errors if there are some
                                     jQuery(this.form.getElements('[data-role=fabrik_tab]')).removeClass('fabrikErrorGroup')
                                     var errfound = false;
-
                                     if (json.errors !== undefined) {
+
                                         // For every element of the form update error message
                                         $H(json.errors).each(function (errors, key) {
                                             if (errors.flatten().length > 0) {
@@ -1807,6 +1806,19 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
                     self.addingOrDeletingGroup = false;
                 }
             }));
+
+/*            this.form.addEvent('click:relay(.fabrikSubGroup)', function (e, subGroup) {
+                var r = subGroup.getElement('.fabrikGroupRepeater');
+                if (r) {
+                    subGroup.addEvent('mouseenter', function (e) {
+                        r.fade(1);
+                    });
+                    subGroup.addEvent('mouseleave', function (e) {
+                        r.fade(0.2);
+                    });
+                }
+            }.bind(this));
+*/
         },
 
         /**
@@ -1847,9 +1859,8 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
                 if (canRepeat.toInt() !== 1) {
                     return;
                 }
-
                 var repeat_counter = this.form.getElement('#fabrik_repeat_group_' + groupId + '_counter'),
-                    repeat_rows, repeat_real, addButton, deleteButton, i, repeat_id_0, deleteEvent;
+                    repeat_rows, repeat_real;
 
                 if (typeOf(repeat_counter) === 'null') {
                     return;
@@ -1864,7 +1875,7 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
                         // Do not reduce rows shown to zero if there are validation errors
                         var fabErrors = repeat_id_0.getElements('.fabrikError');
 
-                        if (typeOf(fabErrors) === 'null' && repeat_id_0.value === '') {
+                        if (fabErrors.length === 0 && repeat_id_0.value === '') {
                             repeat_real = 0;
                         }
                     }
