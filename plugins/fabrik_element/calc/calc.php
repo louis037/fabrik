@@ -416,9 +416,23 @@ class PlgFabrik_ElementCalc extends PlgFabrik_Element
 
 		if ($this->canView())
 		{
-			// Calc is never editable
-			$value = $this->replaceWithIcons($value);
-			$str[] = $value;
+			if (!$this->isEditable())
+			{
+				$value = $this->replaceWithIcons($value);
+				$str[] = $value;
+			}
+			else
+			{
+				$layout = $this->getLayout('form');
+				$layoutData = new stdClass;
+				$layoutData->id = $id;
+				$layoutData->name = $name;
+				$layoutData->height = $element->height;
+				$layoutData->value = $value;
+				$layoutData->cols = $element->width;
+				$layoutData->rows = $element->height;
+				$str[] = $layout->render($layoutData);
+			}
 		}
 		else
 		{
