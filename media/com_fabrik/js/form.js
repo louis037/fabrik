@@ -162,38 +162,45 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
 
         watchRepeatNums: function () {
             Fabrik.addEvent('fabrik.form.elements.added', function (form) {
-                if (form.id === this.id && !this.watchRepeatNumsDone) {
-                    Object.each(this.options.repeatEls, function (elNames, groupId) {
-                        this.options.minRepeatFixed[groupId] = this.options.minRepeat[groupId];
-                        this.options.maxRepeatFixed[groupId] = this.options.maxRepeat[groupId];
-                        var minName = elNames[0];
-                        var maxName = elNames[1];
-                        // Double changeevent call if same element
-                        // Can add code to do single changeevent if needed
-                        if (minName !== '') {
-                            var minEl = this.formElements.get(minName);
-                            if (minEl) {
-                                minEl.addNewEventAux(minEl.getChangeEvent(), function(event) {
-                                    this.options.minRepeat[groupId] = this.repeatValue(minEl, this.options.minRepeatFixed[groupId]);
-                                    this.duplicateGroupsToMin();
-                                }.bind(this, minEl, groupId));
-                                this.options.minRepeat[groupId] = this.repeatValue(minEl, this.options.minRepeatFixed[groupId]);
-                            }
-                        }
-                        if (maxName !== '') {
-                            var maxEl = this.formElements.get(maxName);
-                            if (maxEl) {
-                                maxEl.addNewEventAux(maxEl.getChangeEvent(), function(event) {
-                                    this.options.maxRepeat[groupId] = this.repeatValue(maxEl, this.options.maxRepeatFixed[groupId]);
-                                    this.duplicateGroupsToMin();
-                                }.bind(this, maxEl, groupId));
-                                this.options.maxRepeat[groupId] = this.repeatValue(maxEl, this.options.maxRepeatFixed[groupId]);
-                            }
-                        }
-                    }.bind(form));
-                    this.watchRepeatNumsDone = true;
-                    this.duplicateGroupsToMin();
+                if (form.id !== this.id || this.watchRepeatNumsDone) {
+                    return;
                 }
+
+                Object.each(this.options.group_repeats, function (canRepeat, groupId) {
+                    if (canRepeat.toInt() !== 1) {
+                        return;
+                    }
+
+                    this.options.minRepeatFixed[groupId] = this.options.minRepeat[groupId];
+                    this.options.maxRepeatFixed[groupId] = this.options.maxRepeat[groupId];
+                    var elNames = this.options.repeatEls[groupId];
+                    var minName = elNames[0];
+                    var maxName = elNames[1];
+                    // Double changeevent call if same element
+                    // Can add code to do single changeevent if needed
+                    if (minName !== '') {
+                        var minEl = this.formElements.get(minName);
+                        if (minEl) {
+                            minEl.addNewEventAux(minEl.getChangeEvent(), function(event) {
+                                this.options.minRepeat[groupId] = this.repeatValue(minEl, this.options.minRepeatFixed[groupId]);
+                                this.duplicateGroupToMin(groupId);
+                            }.bind(this, minEl, groupId));
+                            this.options.minRepeat[groupId] = this.repeatValue(minEl, this.options.minRepeatFixed[groupId]);
+                        }
+                    }
+                    if (maxName !== '') {
+                        var maxEl = this.formElements.get(maxName);
+                        if (maxEl) {
+                            maxEl.addNewEventAux(maxEl.getChangeEvent(), function(event) {
+                                this.options.maxRepeat[groupId] = this.repeatValue(maxEl, this.options.maxRepeatFixed[groupId]);
+                                this.duplicateGroupToMin(groupId);
+                            }.bind(this, maxEl, groupId));
+                            this.options.maxRepeat[groupId] = this.repeatValue(maxEl, this.options.maxRepeatFixed[groupId]);
+                        }
+                    }
+                    this.duplicateGroupToMin(groupId, true);
+                }.bind(form));
+                this.watchRepeatNumsDone = true;
             }.bind(this));
         },
 
@@ -1816,7 +1823,9 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
                 }
             }));
 
-/*            this.form.addEvent('click:relay(.fabrikSubGroup)', function (e, subGroup) {
+            /* Sophist - Following code has been commented out as unfading / fading buttons is not consistent with bootstrap style
+
+            this.form.addEvent('click:relay(.fabrikSubGroup)', function (e, subGroup) {
                 var r = subGroup.getElement('.fabrikGroupRepeater');
                 if (r) {
                     subGroup.addEvent('mouseenter', function (e) {
@@ -1827,7 +1836,8 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
                     });
                 }
             }.bind(this));
-*/
+
+            */
         },
 
         /**
@@ -1851,91 +1861,97 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
         /**
          * When editing a new form and when min groups set we need to duplicate each group
          * by the min repeat value.
+         *
+         * Retained for backward compatibility in case called from user JS.
          */
         duplicateGroupsToMin: function () {
+            Object.each(this.options.group_repeats, function (canRepeat, groupId) {
+                if (canRepeat.toInt() === 1) {
+                    this.duplicateGroupToMin(groupId, true);
+                }
+            }.bind(this));
+        },
+
+        /**
+         * Adjust number of rows to be within minimum and maximum allowed
+         *
+         * @param groupId
+         * @param reduceTo0  - true on first call to allow zero rows
+         */
+        duplicateGroupToMin: function (groupId, reduceTo0) {
             if (!this.form) {
                 return;
             }
 
             Fabrik.fireEvent('fabrik.form.group.duplicate.min', [this]);
 
-            Object.each(this.options.group_repeats, function (canRepeat, groupId) {
+            if (typeOf(this.options.minRepeat[groupId]) === 'null') {
+                return;
+            }
 
-                if (typeOf(this.options.minRepeat[groupId]) === 'null') {
-                    return;
-                }
+            var repeat_counter = this.form.getElement('#fabrik_repeat_group_' + groupId + '_counter'),
+                repeat_rows, repeat_real;
 
-                if (canRepeat.toInt() !== 1) {
-                    return;
-                }
-                var repeat_counter = this.form.getElement('#fabrik_repeat_group_' + groupId + '_counter'),
-                    repeat_rows, repeat_real;
+            if (typeOf(repeat_counter) === 'null') {
+                return;
+            }
 
-                if (typeOf(repeat_counter) === 'null') {
-                    return;
-                }
+            repeat_rows = repeat_real = repeat_counter.value.toInt();
 
-                repeat_rows = repeat_real = repeat_counter.value.toInt();
+            // Check if first and only row is a new row so we can reduce rows shown to zero
+            if (repeat_rows === 1) {
+                var repeat_id_0 = this.form.getElement('#' + this.options.group_pk_ids[groupId] + '_0');
+                if (typeOf(repeat_id_0) !== 'null') {
+                    // Do not reduce rows shown to zero if there are validation errors
+                    var fabErrors = repeat_id_0.getElements('.fabrikError');
 
-                // Check if first and only row is a new row so we can reduce rows shown to zero
-                if (repeat_rows === 1) {
-                    var repeat_id_0 = this.form.getElement('#' + this.options.group_pk_ids[groupId] + '_0');
-                    if (typeOf(repeat_id_0) !== 'null') {
-                        // Do not reduce rows shown to zero if there are validation errors
-                        var fabErrors = repeat_id_0.getElements('.fabrikError');
-
-                        if (fabErrors.length === 0 && repeat_id_0.value === '') {
-                            repeat_real = 0;
-                        }
+                    if (fabErrors.length === 0 && repeat_id_0.value === '') {
+                        repeat_real = 0;
                     }
                 }
+            }
 
-                var min = this.options.minRepeat[groupId].toInt();
-                var max = this.options.maxRepeat[groupId].toInt();
-                var group = this.form.getElement('#group' + groupId);
-                var subGroup;
+            var min = this.options.minRepeat[groupId].toInt();
+            var max = this.options.maxRepeat[groupId].toInt();
+            var group = this.form.getElement('#group' + groupId);
+            var subGroup;
 
-                /**
-                 * $$$ hugh - added ability to override min count
-                 * http://fabrikar.com/forums/index.php?threads/how-to-initially-show-repeat-group.32911/#post-170147
-                 * $$$ hugh - trying out min of 0 for Troester
-                 * http://fabrikar.com/forums/index.php?threads/how-to-start-a-new-record-with-empty-repeat-group.34666/#post-175408
-                 * $$$ paul - fixing min of 0 for Jaanus
-                 * http://fabrikar.com/forums/index.php?threads/couple-issues-with-protostar-template.35917/
-                 **/
-                if (repeat_rows < min) {
-                    // Create mock event
-                    var addButton = this.form.getElement('#group' + groupId + ' .addGroup');
-                    if (typeOf(addButton) !== 'null') {
-                        var addEvent = new Event.Mock(addButton, 'click');
+            /**
+             * $$$ hugh - added ability to override min count
+             * http://fabrikar.com/forums/index.php?threads/how-to-initially-show-repeat-group.32911/#post-170147
+             **/
+            if (repeat_rows < min) {
+                // Create mock event
+                var addButton = this.form.getElement('#group' + groupId + ' .addGroup');
+                if (typeOf(addButton) !== 'null') {
+                    var addEvent = new Event.Mock(addButton, 'click');
 
-                        // Duplicate group
-                        for (i = repeat_rows; i < min; i++) {
-                            this.duplicateGroup(addEvent, false);
-                        }
+                    // Duplicate group
+                    for (i = repeat_rows; i < min; i++) {
+                        this.duplicateGroup(addEvent, false);
                     }
                 }
-                else if (max > -1 && repeat_rows > max) {
-                    // Delete groups
-                    for (i = repeat_rows; i > max && i > 0; i--) {
-                        var subGroup = jQuery(group.getElements('.fabrikSubGroup')).last()[0];
-                        var b = jQuery(this.form.getElements('#group' + groupId + ' .deleteGroup')).last()[0];
-                        var deleteButton = jQuery(b).find('[data-role=fabrik_delete_group]')[0];
-                        var deleteEvent = typeOf(deleteButton) !== 'null' ? new Event.Mock(deleteButton, 'click') : false;
-                        this.deleteGroup(deleteEvent, group, subGroup);
-                    }
-                }
-                if (min === 0 && repeat_real === 0) {
-                    // Create mock event
-                    var subGroup = group.getElement('.fabrikSubGroup');
-                    var deleteButton = this.form.getElement('#group' + groupId + ' .deleteGroup');
+            }
+            else if (max > -1 && repeat_rows > max) {
+                // Delete groups
+                for (i = repeat_rows; i > max && i > 0; i--) {
+                    var subGroup = jQuery(group.getElements('.fabrikSubGroup')).last()[0];
+                    var b = jQuery(this.form.getElements('#group' + groupId + ' .deleteGroup')).last()[0];
+                    var deleteButton = jQuery(b).find('[data-role=fabrik_delete_group]')[0];
                     var deleteEvent = typeOf(deleteButton) !== 'null' ? new Event.Mock(deleteButton, 'click') : false;
                     this.deleteGroup(deleteEvent, group, subGroup);
                 }
+            }
+            if (reduceTo0 === true && min === 0 && repeat_real === 0) {
+                // Create mock event
+                var subGroup = group.getElement('.fabrikSubGroup');
+                var deleteButton = this.form.getElement('#group' + groupId + ' .deleteGroup');
+                var deleteEvent = typeOf(deleteButton) !== 'null' ? new Event.Mock(deleteButton, 'click') : false;
+                this.deleteGroup(deleteEvent, group, subGroup);
+            }
 
-                this.setRepeatGroupIntro(group, groupId);
-                this.setRepeatButtons(group, groupId);
-            }.bind(this));
+            this.setRepeatGroupIntro(group, groupId);
+            this.setRepeatButtons(group, groupId);
         },
 
         /**
@@ -2328,7 +2344,7 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
 
             /**
              * Only scroll the window if the new element is not visible and 'scroll' arg true
-             * (so for example, we won't scroll if called from duplicateGroupsToMin)
+             * (so for example, we won't scroll if called from duplicateGroupToMin)
              */
 
             if (scroll) {
@@ -2632,7 +2648,7 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
         }
     });
 
-        // Deprecated - think its no longer used.
+    // Deprecated - think its no longer used.
     Fabrik.form = function (ref, id, opts) {
         var form = new FbForm(id, opts);
         Fabrik.addBlock(ref, form);
