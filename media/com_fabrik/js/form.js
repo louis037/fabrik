@@ -2053,13 +2053,13 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
             var msg = this.options.noDataMsg[groupId];
 
             if (msg === '') {
-                msg = Joomla.JText._('COM_FABRIK_NO_REPEAT_GROUP_DATA');
+                msg = 'COM_FABRIK_NO_REPEAT_GROUP_DATA';
             }
 
             var sge = subGroup.getElement('.fabrikSubGroupElements');
             var notice = new Element(
                 'div', {'class': 'fabrikNotice alert'}
-            ).appendText(msg);
+            ).appendText(Joomla.JText._(msg));
             if (typeOf(sge) === 'null') {
                 sge = subGroup;
                 var add = sge.getElement('.addGroup');
