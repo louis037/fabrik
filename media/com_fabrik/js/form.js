@@ -37,8 +37,10 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
             'images'        : {
                 'alert'       : '',
                 'action_check': '',
-                'ajax_loader' : ''
-            }
+                'ajax_loader' : '',
+            },
+            'minRepeatFixed': {},
+            'maxRepeatFixed': {},
         },
 
         initialize: function (id, options) {
@@ -153,32 +155,39 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
             this.watchRepeatNums();
         },
 
+        repeatValue: function (el, defaultValue) {
+            var elValue = el.getValue();
+            return jQuery.isNumeric(elValue) ? parseInt(elValue) : defaultValue;
+        },
+
         watchRepeatNums: function () {
             Fabrik.addEvent('fabrik.form.elements.added', function (form) {
                 if (form.id === this.id && !this.watchRepeatNumsDone) {
                     Object.each(this.options.repeatEls, function (elNames, groupId) {
-                        minName = elNames[0];
-                        maxName = elNames[1];
+                        this.options.minRepeatFixed[groupId] = this.options.minRepeat[groupId];
+                        this.options.maxRepeatFixed[groupId] = this.options.maxRepeat[groupId];
+                        var minName = elNames[0];
+                        var maxName = elNames[1];
                         // Double changeevent call if same element
                         // Can add code to do single changeevent if needed
                         if (minName !== '') {
-                            var el = this.formElements.get(minName);
-                            if (el) {
-                                el.addNewEventAux(el.getChangeEvent(), function(event) {
-                                    this.options.minRepeat[groupId] = el.getValue().toInt();
+                            var minEl = this.formElements.get(minName);
+                            if (minEl) {
+                                minEl.addNewEventAux(minEl.getChangeEvent(), function(event) {
+                                    this.options.minRepeat[groupId] = this.repeatValue(minEl, this.options.minRepeatFixed[groupId]);
                                     this.duplicateGroupsToMin();
-                                }.bind(this, el, groupId));
-                                this.options.minRepeat[groupId] = el.getValue().toInt();
+                                }.bind(this, minEl, groupId));
+                                this.options.minRepeat[groupId] = this.repeatValue(minEl, this.options.minRepeatFixed[groupId]);
                             }
                         }
                         if (maxName !== '') {
-                            var el = this.formElements.get(maxName);
-                            if (el) {
-                                el.addNewEventAux(el.getChangeEvent(), function(event) {
-                                    this.options.maxRepeat[groupId] = el.getValue().toInt();
+                            var maxEl = this.formElements.get(maxName);
+                            if (maxEl) {
+                                maxEl.addNewEventAux(maxEl.getChangeEvent(), function(event) {
+                                    this.options.maxRepeat[groupId] = this.repeatValue(maxEl, this.options.maxRepeatFixed[groupId]);
                                     this.duplicateGroupsToMin();
-                                }.bind(this, el, groupId));
-                                this.options.maxRepeat[groupId] = el.getValue().toInt();
+                                }.bind(this, maxEl, groupId));
+                                this.options.maxRepeat[groupId] = this.repeatValue(maxEl, this.options.maxRepeatFixed[groupId]);
                             }
                         }
                     }.bind(form));
@@ -1930,7 +1939,7 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
         },
 
         /**
-         * Delete an repeating group
+         * Delete a repeating group
          *
          * @param e
          * @param group
