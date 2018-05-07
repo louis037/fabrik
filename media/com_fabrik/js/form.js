@@ -2284,6 +2284,7 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
                     } else {
                         newEl.cloneUpdateIds(lastinput.id);
                     }
+
                     newElementControllers.push(newEl);
                 }
             }.bind(this));
