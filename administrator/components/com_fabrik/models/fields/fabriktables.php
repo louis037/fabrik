@@ -72,7 +72,7 @@ class JFormFieldFabrikTables extends JFormFieldList
 			$query->select('id AS value, label AS text')->from('#__{package}_lists')->where('published <> -2')->order('label ASC');
 			$db->setQuery($query);
 			$rows = $db->loadObjectList();
-			$rows = array_unshift($rows, JHTML::_('select.option', '', FText::_('COM_FABRIK_SELECT_LIST')));
+			array_unshift($rows, JHTML::_('select.option', '', FText::_('COM_FABRIK_SELECT_LIST')));
 
 		}
 		else
