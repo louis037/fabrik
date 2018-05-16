@@ -241,9 +241,7 @@ class FabrikPlugin extends JPlugin
 			}
 
 			$tab        = new stdClass;
-			if ($repeatCounter != '') {
-				$tab->href  = 'tab-' . $fieldset->name . '-' . $repeatCounter;
-			}
+			$tab->href  = 'tab-' . $fieldset->name . '-' . $repeatCounter;
 			$tab->id    = 'tab-' . $fieldset->name;
 			$tab->class = $i === 0 ? 'active' : '';
 			$tab->label = $fieldset->label;
@@ -412,18 +410,13 @@ class FabrikPlugin extends JPlugin
 			$mode = null;
 		}
 
-		if ($repeatCounter != '')
-		{
-			$repeatCounter = '-' . $repeatCounter;
-		}
-
 		// Filer the forms fieldsets for those starting with the correct $searchName prefix
 		foreach ($fieldsets as $fieldset)
 		{
 			if ($mode === 'nav-tabs')
 			{
 				$tabClass = $c === 0 ? ' active' : '';
-				$str[]    = '<div role="tabpanel" class="tab-pane' . $tabClass . '" id="tab-' . $fieldset->name . $repeatCounter . '">';
+				$str[]    = '<div role="tabpanel" class="tab-pane' . $tabClass . '" id="tab-' . $fieldset->name . '-' . $repeatCounter . '">';
 			}
 
 			$class = $j3 ? 'form-horizontal ' : 'adminform ';
